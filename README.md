@@ -2,7 +2,8 @@
 名人名言微信小程序
 
 这是2025新版，希望借助 TRAE 等编程工具，提供更多的功能。
-旧版仍然保留在 sim4d/mini-quotes.git 项目。
+
+旧版仍然保留在 sim4d/mini-quotes.git 项目中。
 
 ## 开发环境
 - 准备 sandbox (要求 pub key 已经在 GitHub 账户 Profile 设置好)
