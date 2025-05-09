@@ -1,0 +1,44 @@
+<!--quotes.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="page-container">
+    <view class="quotes">
+      <block wx:if="{{firstPage}}">
+        <view class="saying-container">
+          <view class="empty-line"></view>
+        </view>
+        <view class="saying-container">
+          <view class="empty-line"></view>
+        </view>
+        <image bindtap="bindViewTap" src="{{frontQuote}}" mode="widthFix"></image>
+        <view class="saying-container">
+          <view class="usermotto">
+            <text class="user-motto">{{motto1}}</text>
+          </view>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="saying-container">
+          <view class="empty-line"></view>
+        </view>
+        <view class="saying-container">
+          <view class="empty-line"></view>
+        </view>
+       <view class="saying-container">
+          <text class="saying" bindtap="bindViewTap2">{{currentQuote}}</text>
+        </view>
+        <view class="saying-container">
+          <view class="empty-line"></view>
+        </view>
+        <view class="saying-container">
+          <text class="author">{{quotesAuthor}}</text>
+        </view>
+        <view class="saying-container">
+          <view class="usermotto">
+            <text class="user-motto">{{motto2}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+</scroll-view>
+

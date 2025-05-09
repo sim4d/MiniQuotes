@@ -1,0 +1,38 @@
+/* quotes.wxss */
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.empty-line {
+  width: 100%; /* 根据需要设置宽度 */
+  height: 20px; /* 空行的 height，根据需要调整 */
+  background-color: transparent; /* 设置为透明背景 */
+}
+
+.saying-container {
+  text-align: center;
+  margin-top: 20px;
+}
+.saying {
+  font-size: 18px;
+  line-height: 1.5;
+  font-family: 'Times New Roman', Times, serif;
+  /* 你可以在这里添加更多的字体样式，比如font-style: italic; 来实现花体效果 */
+}
+.author {
+  font-size: 14px;
+  font-family: 'Comic Sans MS', cursive;
+  /* 同样，在这里添加花体字体的样式 */
+}
+.usermotto {
+  margin-top: 200px;
+}
