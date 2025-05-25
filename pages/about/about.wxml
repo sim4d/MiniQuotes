@@ -1,0 +1,22 @@
+<view class="container">
+  <!-- About内容区域 -->
+  <view class="about-section">
+    <view class="about-card">
+      <text class="title">About</text>
+      <text class="content">
+        我们致力于为用户提供有启发性的内容，帮助您在日常生活中获得灵感和动力。
+      </text>
+    </view>
+  </view>
+
+  <!-- 广告窗口 -->
+  <view class="ad-section">
+    <view class="ad-container" bindtap="onAdTap" wx:if="{{adLoaded}}">
+      <image src="{{adImage}}" mode="aspectFill" class="ad-image"></image>
+      <text class="ad-text">AD</text>
+    </view>
+    <view wx:else class="ad-loading">
+      <text>Loading...</text>
+    </view>
+  </view>
+</view>

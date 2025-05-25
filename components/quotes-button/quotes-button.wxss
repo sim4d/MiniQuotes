@@ -1,0 +1,54 @@
+/* components/quotes-button/quotes-button.wxss */
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 8px 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.9),
+              0 0 0 1px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+  position: relative;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 500;
+  color: #3b82f6;
+  letter-spacing: 0.5px;
+}
+
+.quotes-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quotes-button::after {
+  border: none;
+}
+
+.quotes-button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.quotes-button:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.quotes-button:active::before {
+  opacity: 1;
+}

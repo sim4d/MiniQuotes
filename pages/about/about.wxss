@@ -1,0 +1,77 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f8fafc;
+}
+
+/* About内容区域 */
+.about-section {
+  flex: 1;
+  padding: 20px;
+}
+
+.about-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.content {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* 广告区域 */
+.ad-section {
+  height: 120px;
+  padding: 10px 20px;
+  background-color: white;
+  border-top: 1px solid #eee;
+}
+
+.ad-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.ad-image {
+  width: 100%;
+  height: 80px;
+  border-radius: 6px;
+}
+
+.ad-text {
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+}
+
+.ad-loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  color: #999;
+  font-size: 14px;
+}

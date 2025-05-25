@@ -1,44 +1,25 @@
 <!--quotes.wxml-->
-<scroll-view class="scrollarea" scroll-y type="list">
-  <view class="page-container">
-    <view class="quotes">
-      <block wx:if="{{firstPage}}">
-        <view class="saying-container">
-          <view class="empty-line"></view>
-        </view>
-        <view class="saying-container">
-          <view class="empty-line"></view>
-        </view>
-        <image bindtap="bindViewTap" src="{{frontQuote}}" mode="widthFix"></image>
-        <view class="saying-container">
-          <view class="usermotto">
-            <text class="user-motto">{{motto1}}</text>
-          </view>
-        </view>
-      </block>
-      <block wx:else>
-        <view class="saying-container">
-          <view class="empty-line"></view>
-        </view>
-        <view class="saying-container">
-          <view class="empty-line"></view>
-        </view>
-       <view class="saying-container">
-          <text class="saying" bindtap="bindViewTap2">{{currentQuote}}</text>
-        </view>
-        <view class="saying-container">
-          <view class="empty-line"></view>
-        </view>
-        <view class="saying-container">
-          <text class="author">{{quotesAuthor}}</text>
-        </view>
-        <view class="saying-container">
-          <view class="usermotto">
-            <text class="user-motto">{{motto2}}</text>
-          </view>
-        </view>
-      </block>
+<view class="page-container-quotes">
+  <!-- 可滚动的引用内容区域 -->
+  <scroll-view class="quotes-scroll-area" scroll-y="true">
+    <view class="quote-content">
+      <view class="quote-card">
+        <text class="quote-text" bindtap="refreshQuote">{{currentQuote}}</text>
+        <text class="quote-author">— {{quotesAuthor}}</text>
+      </view>
     </view>
-  </view>
-</scroll-view>
+  </scroll-view>
 
+  <!-- 固定在底部的按钮区域 -->
+  <view class="fixed-bottom-actions">
+    <button class="action-button refresh-button" bindtap="refreshQuote">
+      <text>换一句</text>
+    </button>
+    <button class="action-button copy-button" bindtap="copyQuote">
+      <text>复制</text>
+    </button>
+    <button class="action-button share-button" open-type="share">
+      <text>分享</text>
+    </button>
+  </view>
+</view>
