@@ -1,24 +1,26 @@
 /**index.wxss**/
 .container {
-  height: 100vh;
+  min-height: 100vh;
   display: grid;
-  grid-template-columns: repeat(3, 100px);
-  grid-auto-rows: min-content;
-  gap: 12px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
   padding: 20px;
   background-color: #f8fafc;
-  justify-content: center;
   align-content: start;
 }
 
-.quotes-button {
-  grid-column: 1;
-  grid-row: 1;
+.quotes-button-wrapper {
+  grid-column: 1 / 2;
+  width: 100%;
 }
 
-quotes-button {
-  grid-column: 1;
-  grid-row: 1;
+.tetris-button-wrapper {
+  grid-column: 2 / 3;
   width: 100%;
-  height: 100%;
+}
+
+tetris-button, quotes-button {
+  width: 100%;
+  height: auto;
+  display: block;
 }

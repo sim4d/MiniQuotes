@@ -1,0 +1,104 @@
+<!--pages/tetris/tetris.wxml-->
+<view class="tetris-container">
+  <!-- 游戏主体区域 -->
+  <view class="game-area-container">
+    <!-- 游戏区域和下一个方块的布局容器 -->
+    <view class="game-layout">
+      <!-- 游戏主区域 -->
+      <view class="game-area" style="width: {{gameAreaWidth}}px; height: {{gameAreaHeight}}px;">
+        <canvas type="2d" id="tetris-canvas" class="tetris-canvas" 
+                style="width: {{gameAreaWidth}}px; height: {{gameAreaHeight}}px;"
+                bindtouchstart="onTouchStart" 
+                bindtouchmove="onTouchMove" 
+                bindtouchend="onTouchEnd">
+        </canvas>
+        
+        <!-- 游戏结束遮罩 -->
+        <view class="game-over-mask" wx:if="{{gameOver}}">
+          <view class="game-over-content">
+            <view class="game-over-title">游戏结束</view>
+            <view class="game-over-score">本次得分: {{score}}</view>
+            
+            <!-- 历史最高分列表 -->
+            <view class="highscores-container">
+              <view class="highscores-title">历史最高分</view>
+              <view class="highscores-list">
+                <view class="highscore-item" wx:for="{{highScores}}" wx:key="index">
+                  <text class="highscore-rank">{{index + 1}}</text>
+                  <text class="highscore-value">{{item}}</text>
+                </view>
+              </view>
+            </view>
+            
+            <button class="restart-button" hover-class="button-hover" bindtap="restartGame">再来一局</button>
+          </view>
+        </view>
+        
+        <!-- 暂停遮罩 -->
+        <view class="pause-overlay" wx:if="{{isPaused && !gameOver}}">
+          <button class="resume-button" hover-class="button-hover" bindtap="resumeGame">继续</button>
+        </view>
+      </view>
+      
+      <!-- 下一个方块信息 - 并排放在右侧 -->
+      <view class="next-block-container">
+        <view class="info-card next-block-card">
+          <text class="info-label">下一个</text>
+          <canvas type="2d" id="next-block-canvas" class="next-block-canvas" 
+                  style="width: {{nextBlockSize}}px; height: {{nextBlockSize}}px;">
+          </canvas>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 游戏信息和控制区域 - 更紧凑的布局 -->
+  <view class="game-info-container">
+    <!-- 分数和方向控制按钮在同一行 -->
+    <view class="info-controls-row">
+      <!-- 分数信息 -->
+      <view class="info-card score-card">
+        <text class="info-label">分数</text>
+        <text class="info-value score-value">{{score}}</text>
+      </view>
+      
+      <!-- 方向控制按钮 - 紧凑型布局 -->
+      <view class="compact-controls">
+        <view class="compact-control-row">
+          <view class="control-button small-button left-button" bindtap="moveLeft">
+            <text class="control-icon">←</text>
+          </view>
+          <view class="control-button small-button rotate-button" bindtap="rotateBlock">
+            <text class="control-icon">↻</text>
+          </view>
+          <view class="control-button small-button right-button" bindtap="moveRight">
+            <text class="control-icon">→</text>
+          </view>
+          <view class="control-button small-button down-button" bindtap="dropBlock">
+            <text class="control-icon">↓</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 游戏操作按钮 - 紧凑排列 -->
+    <view class="game-buttons">
+      <view class="game-button pause-button" hover-class="button-hover" bindtap="togglePause">
+        <text>暂停</text>
+      </view>
+      
+      <view class="game-button restart-button" hover-class="button-hover" bindtap="restartGame">
+        <text>重新开始</text>
+      </view>
+      
+      <view class="game-button sound-button" hover-class="button-hover" bindtap="toggleSound">
+        <text>{{isSoundOn ? '关闭音效' : '开启音效'}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 烟花动画容器 -->
+  <view class="fireworks-container" wx:if="{{showFireworks}}">
+    <canvas type="2d" id="fireworks-canvas" class="fireworks-canvas"></canvas>
+  </view>
+</view> 

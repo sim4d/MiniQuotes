@@ -1,25 +1,22 @@
 <!--quotes.wxml-->
-<view class="page-container-quotes">
-  <!-- 可滚动的引用内容区域 -->
-  <scroll-view class="quotes-scroll-area" scroll-y="true">
-    <view class="quote-content">
-      <view class="quote-card">
-        <text class="quote-text" bindtap="refreshQuote">{{currentQuote}}</text>
-        <text class="quote-author">— {{quotesAuthor}}</text>
-      </view>
+<view class="page-container">
+  <view class="quote-container">
+    <view class="quote-card">
+      <view class="quote-marks">"</view>
+      <text class="quote-text" bindtap="refreshQuote">{{currentQuote}}</text>
+      <text class="quote-author">{{quotesAuthor}}</text>
     </view>
-  </scroll-view>
+  </view>
 
-  <!-- 固定在底部的按钮区域 -->
-  <view class="fixed-bottom-actions">
-    <button class="action-button refresh-button" bindtap="refreshQuote">
+  <view class="action-container">
+    <view class="action-button refresh-button" bindtap="refreshQuote">
       <text>换一句</text>
-    </button>
-    <button class="action-button copy-button" bindtap="copyQuote">
+    </view>
+    <view class="action-button copy-button" bindtap="copyQuote">
       <text>复制</text>
-    </button>
-    <button class="action-button share-button" open-type="share">
+    </view>
+    <view class="action-button share-button" open-type="share">
       <text>分享</text>
-    </button>
+    </view>
   </view>
 </view>

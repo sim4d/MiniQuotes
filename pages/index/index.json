@@ -1,8 +1,9 @@
 {
-    "navigationBarTitleText": "Home",
+    "navigationBarTitleText": "MiniQuotes",
     "navigationBarTextStyle": "black",
     "navigationBarBackgroundColor": "#f8fafc",
     "usingComponents": {
-        "quotes-button": "../../components/quotes-button/quotes-button"
+        "quotes-button": "/components/quotes-button/quotes-button",
+        "tetris-button": "/components/tetris-button/tetris-button"
     }
 }

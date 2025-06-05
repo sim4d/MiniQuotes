@@ -1,0 +1,445 @@
+/* pages/tetris/tetris.wxss */
+/* 确保页面不可滚动 */
+page {
+  background-color: #f8fafc;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* 禁止页面滚动 */
+  position: fixed; /* 固定页面 */
+}
+
+/* 修改游戏容器样式，整体扩大为95% */
+.tetris-container {
+  display: flex;
+  flex-direction: column;
+  height: 95vh; /* 扩大为95%，原来是90% */
+  width: 95%; /* 扩大为95%，原来是90% */
+  box-sizing: border-box;
+  padding: 8px;
+  position: relative;
+  margin: 2.5vh auto; /* 调整为居中显示 */
+  overflow: hidden; /* 禁止内容溢出 */
+  background-color: #eef2f7; /* 添加淡蓝灰色背景 */
+}
+
+/* 调整游戏区域容器，减小高度比例 */
+.game-area-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 5px; /* 减小底部间距 */
+  flex: 0 0 auto; /* 不允许伸缩 */
+  padding: 10px; /* 添加内边距 */
+  background-color: #e5eaf2; /* 添加稍深一点的背景色 */
+  border-radius: 12px; /* 添加圆角 */
+}
+
+/* 游戏区域和下一个方块的布局容器 */
+.game-layout {
+  display: flex;
+  align-items: flex-start; /* 顶部对齐 */
+  justify-content: space-between; /* 改为两端对齐，让游戏区域更大 */
+  width: 100%;
+  gap: 8px; /* 减小间隙 */
+}
+
+/* 游戏区域样式 */
+.game-area {
+  position: relative;
+  background-color: #ffffff; /* 保持游戏区域为白色背景 */
+  border-radius: 8px; /* 添加圆角 */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* 添加轻微阴影 */
+  overflow: hidden; /* 确保内容不溢出圆角 */
+  flex-grow: 1; /* 允许游戏区域伸展 */
+  max-width: calc(100% - 85px); /* 保留足够空间给右侧的下一个方块 */
+}
+
+.tetris-canvas {
+  display: block; /* 消除画布底部间隙 */
+  background-color: #ffffff; /* 确保画布背景为白色 */
+}
+
+/* 下一个方块容器 - 并排放在右侧 */
+.next-block-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 70px; /* 确保有足够宽度 */
+  flex-shrink: 0; /* 防止收缩 */
+}
+
+/* 调整下一个方块卡片 */
+.next-block-card {
+  min-width: 60px;
+  min-height: 70px;
+  background-color: transparent;
+  box-shadow: none;
+  border: none;
+  padding: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.next-block-card .info-label {
+  font-size: 12px;
+  margin-bottom: 5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.next-block-canvas {
+  background-color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+  border-radius: 4px;
+}
+
+/* 调整游戏信息区域 */
+.game-info-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 0 0 auto; /* 不允许伸展 */
+  background-color: #e5eaf2;
+  border-radius: 12px;
+  padding: 8px; /* 减小内边距 */
+  margin-top: 5px;
+}
+
+/* 信息卡片样式 */
+.info-card {
+  background-color: #ffffff; /* 白色背景 */
+  border-radius: 10px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.info-label {
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 1px;
+}
+
+.info-value {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* 分数和方向控制按钮在同一行的布局 */
+.info-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 6px; /* 减小底部间距 */
+  padding: 0 4px;
+}
+
+.score-card {
+  flex: 0 0 auto;
+  min-width: 65px; /* 增大宽度 */
+}
+
+.compact-controls {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  padding: 0 5px;
+  width: 100%;
+}
+
+.compact-control-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 260px; /* 增加最大宽度以适应更大的按钮 */
+  padding: 0 4px;
+}
+
+/* 控制按钮样式 */
+.control-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ffffff; /* 白色背景 */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 4px;
+  user-select: none;
+  -webkit-user-select: none;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.control-button:active {
+  transform: scale(0.95);
+  background-color: #e2e8f0;
+}
+
+/* 更大的控制按钮 */
+.small-button {
+  width: 50px; /* 再扩大20%，原来是42px */
+  height: 50px; /* 再扩大20%，原来是42px */
+  margin: 0 3px; /* 稍微增加按钮间距 */
+}
+
+/* 控制按钮图标 */
+.control-icon {
+  font-size: 20px;
+  font-weight: bold;
+  color: #64748b;
+}
+
+.left-button .control-icon,
+.right-button .control-icon {
+  font-size: 24px;
+}
+
+.down-button .control-icon {
+  font-size: 24px;
+}
+
+.rotate-button .control-icon {
+  font-size: 22px;
+}
+
+/* 游戏按钮容器调整 */
+.game-buttons {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 20px; /* 减小内边距 */
+  width: 100%;
+  background-color: transparent;
+}
+
+/* 游戏操作按钮 */
+.game-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 75px;
+  height: 44px;
+  border-radius: 22px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.game-button:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+.pause-button {
+  background-color: rgba(137, 149, 255, 0.1);
+  color: #7a86ff;
+}
+
+.restart-button {
+  background-color: rgba(255, 107, 139, 0.1);
+  color: #ff6b8b;
+}
+
+.sound-button {
+  background-color: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+
+.score-value {
+  color: #10b981;
+}
+
+.level-value {
+  color: #3b82f6;
+}
+
+/* 暂停遮罩样式 */
+.pause-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+/* 简化的继续按钮 */
+.resume-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 44px;
+  border-radius: 22px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: rgba(137, 149, 255, 0.1);
+  color: #7a86ff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.resume-button:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+/* 游戏结束时的重新开始按钮 */
+button.restart-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 44px;
+  border-radius: 22px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: rgba(255, 107, 139, 0.1);
+  color: #ff6b8b;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  border: none;
+  margin-top: 12px;
+  transition: all 0.2s ease;
+}
+
+button.restart-button:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+/* 按钮悬停效果 */
+.button-hover {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* 游戏结束遮罩 */
+.game-over-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.game-over-content {
+  background-color: rgba(255, 250, 250, 0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  width: 75%;
+  max-width: 220px;
+  border: 1px solid rgba(255, 241, 242, 0.9);
+}
+
+.game-over-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #ff6b8b;
+}
+
+.game-over-score {
+  font-size: 15px;
+  margin-bottom: 10px;
+  color: #64748b;
+}
+
+/* 历史最高分列表样式 */
+.highscores-container {
+  width: 100%;
+  margin: 5px 0 10px;
+}
+
+.highscores-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.highscores-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: rgba(241, 245, 249, 0.5);
+  border-radius: 8px;
+  padding: 5px;
+}
+
+.highscore-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 8px;
+  font-size: 13px;
+}
+
+.highscore-rank {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.highscore-value {
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* 突出显示第一名 */
+.highscore-item:first-child .highscore-rank,
+.highscore-item:first-child .highscore-value {
+  color: #ff6b8b;
+  font-weight: 700;
+}
+
+/* 烟花动画容器 */
+.fireworks-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.fireworks-canvas {
+  width: 100%;
+  height: 100%;
+}

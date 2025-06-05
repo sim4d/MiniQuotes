@@ -1,4 +1,6 @@
 {
-  "usingComponents": {},
-  "enablePullDownRefresh": true
+  "navigationBarTitleText": "MiniQuotes",
+  "enablePullDownRefresh": true,
+  "navigationBarTextStyle": "black",
+  "navigationBarBackgroundColor": "#fafafa"
 }

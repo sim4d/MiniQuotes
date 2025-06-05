@@ -49,5 +49,14 @@ Page({
   onPullDownRefresh() {
     this.refreshQuote();
     wx.stopPullDownRefresh();
+  },
+
+  // 分享功能
+  onShareAppMessage() {
+    return {
+      title: `${this.data.currentQuote.substring(0, 30)}...`,
+      path: '/pages/quotes/quotes',
+      imageUrl: '/images/share-image.png' // 如果有分享图片可以添加
+    }
   }
 })

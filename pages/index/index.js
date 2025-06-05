@@ -9,5 +9,12 @@ Page({
         wx.navigateTo({
             url: '../quotes/quotes'
         })
+    },
+
+    // 导航到 Tetris 游戏页面
+    navigateToTetris: function () {
+        wx.navigateTo({
+            url: '../tetris/tetris'
+        })
     }
 })

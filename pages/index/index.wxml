@@ -1,4 +1,9 @@
 <!--index.wxml-->
 <view class="container">
-  <quotes-button bindtap="navigateToQuotes"></quotes-button>
+  <view class="quotes-button-wrapper">
+    <quotes-button bindtap="navigateToQuotes"></quotes-button>
+  </view>
+  <view class="tetris-button-wrapper">
+    <tetris-button bindtap="navigateToTetris"></tetris-button>
+  </view>
 </view>
