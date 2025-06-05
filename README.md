@@ -19,7 +19,7 @@ git clone git@github.com:sim4d/MiniQuotes.git MiniQuotes
 - 从上述目录导入项目
 
 ## 最新版本
-- [releases](/releases) 
+- [releases](../../releases) 
 
 ## 扫描试用
 微信扫码
