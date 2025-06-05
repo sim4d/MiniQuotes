@@ -18,6 +18,9 @@ git clone git@github.com:sim4d/MiniQuotes.git MiniQuotes
 - 下载 [微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)
 - 从上述目录导入项目
 
+## 最新版本
+- [releases](/releases) 
+
 ## 扫描试用
 微信扫码
 
