@@ -38,7 +38,7 @@ ssh -T -p 443 git@ssh.github.com
 
 若显示“# Hi {USERNAME}! You've successfully authenticated, but GitHub does not # provide shell access.”，则证明可以通过HTTPS连接。
 
-### ​​启用通过HTTPS的SSH连接​​：
+#### ​​启用通过HTTPS的SSH连接​​：
 若上述方法可行，可覆盖SSH设置来强制与GitHub.com的任何连接均通过该服务器和端口运行。打开SSH的config文档（通常位于“~/.ssh/config”），添加以下字段：
 
 ```bash
