@@ -90,20 +90,20 @@ Page({
         ]
     ],
 
-    // 音效
-    sounds: {
-        move: null,
-        rotate: null,
-        drop: null,
-        clear: null,
-        gameOver: null,
-        levelUp: null,
-        highScore: null
-    },
-
     // 生命周期函数
     onLoad: function () {
         console.log('俄罗斯方块游戏页面加载');
+
+        // 初始化音效对象
+        this.sounds = {
+            move: null,
+            rotate: null,
+            drop: null,
+            clear: null,
+            gameOver: null,
+            levelUp: null,
+            highScore: null
+        };
 
         // 初始化界面尺寸
         this.initGameArea();
@@ -143,6 +143,14 @@ Page({
 
         // 停止烟花动画
         this.stopFireworks();
+
+        // 销毁所有音效实例
+        for (const key in this.sounds) {
+            if (this.sounds[key] && typeof this.sounds[key].destroy === 'function') {
+                this.sounds[key].destroy();
+            }
+            this.sounds[key] = null;
+        }
     },
 
     // 初始化游戏区域大小
@@ -175,7 +183,7 @@ Page({
     },
 
     // 初始化游戏数据
-    initGame: function () {
+    initGame: async function () {
         // 创建空网格
         const grid = [];
         for (let row = 0; row < this.data.gridRows; row++) {
@@ -202,96 +210,110 @@ Page({
         this.dropInterval = 1000; // 确保每次游戏开始时重置为初始速度
 
         // 在下一帧初始化画布
-        setTimeout(() => {
-            this.initCanvas();
-            this.initNextBlockCanvas();
+        try {
+            await this.initCanvas();
+            await this.initNextBlockCanvas();
             this.drawGame();
             this.startGameLoop();
-        }, 100);
+        } catch (error) {
+            console.error('画布初始化失败:', error);
+        }
     },
 
     // 初始化音效
     initSounds: function () {
-        // 初始化各种音效
-        this.sounds.move = wx.createInnerAudioContext();
-        this.sounds.move.src = 'https://assets.easygoing.fun/sounds/tetris/move.mp3';
-
-        this.sounds.rotate = wx.createInnerAudioContext();
-        this.sounds.rotate.src = 'https://assets.easygoing.fun/sounds/tetris/rotate.mp3';
-
-        this.sounds.drop = wx.createInnerAudioContext();
-        this.sounds.drop.src = 'https://assets.easygoing.fun/sounds/tetris/drop.mp3';
-
-        this.sounds.clear = wx.createInnerAudioContext();
-        this.sounds.clear.src = 'https://assets.easygoing.fun/sounds/tetris/clear.mp3';
-
-        this.sounds.gameOver = wx.createInnerAudioContext();
-        this.sounds.gameOver.src = 'https://assets.easygoing.fun/sounds/tetris/game_over.mp3';
-
-        this.sounds.levelUp = wx.createInnerAudioContext();
-        this.sounds.levelUp.src = 'https://assets.easygoing.fun/sounds/tetris/level_up.mp3';
-
-        this.sounds.highScore = wx.createInnerAudioContext();
-        this.sounds.highScore.src = 'https://assets.easygoing.fun/sounds/tetris/high_score.mp3';
+        // 懒加载音效，在需要时创建
+        this.soundSources = {
+            move: 'https://assets.easygoing.fun/sounds/tetris/move.mp3',
+            rotate: 'https://assets.easygoing.fun/sounds/tetris/rotate.mp3',
+            drop: 'https://assets.easygoing.fun/sounds/tetris/drop.mp3',
+            clear: 'https://assets.easygoing.fun/sounds/tetris/clear.mp3',
+            gameOver: 'https://assets.easygoing.fun/sounds/tetris/game_over.mp3',
+            levelUp: 'https://assets.easygoing.fun/sounds/tetris/level_up.mp3',
+            highScore: 'https://assets.easygoing.fun/sounds/tetris/high_score.mp3'
+        };
     },
 
     // 播放音效
     playSound: function (soundName) {
-        if (this.data.isSoundOn && this.sounds[soundName]) {
-            this.sounds[soundName].stop();
-            this.sounds[soundName].play();
+        if (!this.data.isSoundOn) return;
+
+        // 如果音效实例不存在，则创建并缓存
+        if (!this.sounds[soundName]) {
+            if (!this.soundSources[soundName]) {
+                console.error('未找到音源:', soundName);
+                return;
+            }
+            const audioContext = wx.createInnerAudioContext();
+            audioContext.src = this.soundSources[soundName];
+            this.sounds[soundName] = audioContext;
+        }
+
+        // 播放音效
+        const sound = this.sounds[soundName];
+        if (sound) {
+            sound.stop();
+            sound.play();
         }
     },
 
     // 初始化主游戏画布
     initCanvas: function () {
-        const query = wx.createSelectorQuery();
-        query.select('#tetris-canvas')
-            .fields({ node: true, size: true })
-            .exec((res) => {
-                if (!res[0]) {
-                    console.error('无法获取游戏画布元素');
-                    return;
-                }
+        return new Promise((resolve, reject) => {
+            const query = wx.createSelectorQuery().in(this);
+            query.select('#tetris-canvas')
+                .fields({ node: true, size: true })
+                .exec((res) => {
+                    if (!res[0] || !res[0].node) {
+                        console.error('无法获取游戏画布元素');
+                        reject('无法获取游戏画布元素');
+                        return;
+                    }
 
-                const canvas = res[0].node;
-                const ctx = canvas.getContext('2d');
+                    const canvas = res[0].node;
+                    const ctx = canvas.getContext('2d');
 
-                // 设置画布尺寸
-                canvas.width = this.data.gameAreaWidth;
-                canvas.height = this.data.gameAreaHeight;
+                    // 设置画布尺寸
+                    canvas.width = this.data.gameAreaWidth;
+                    canvas.height = this.data.gameAreaHeight;
 
-                this.canvas = canvas;
-                this.ctx = ctx;
-                console.log('游戏主画布已初始化，尺寸:', canvas.width, 'x', canvas.height);
-            });
+                    this.canvas = canvas;
+                    this.ctx = ctx;
+                    console.log('游戏主画布已初始化，尺寸:', canvas.width, 'x', canvas.height);
+                    resolve();
+                });
+        });
     },
 
     // 初始化下一个方块预览画布
     initNextBlockCanvas: function () {
-        const query = wx.createSelectorQuery();
-        query.select('#next-block-canvas')
-            .fields({ node: true, size: true })
-            .exec((res) => {
-                if (!res[0]) {
-                    console.error('无法获取下一个方块预览画布元素');
-                    return;
-                }
+        return new Promise((resolve, reject) => {
+            const query = wx.createSelectorQuery().in(this);
+            query.select('#next-block-canvas')
+                .fields({ node: true, size: true })
+                .exec((res) => {
+                    if (!res[0] || !res[0].node) {
+                        console.error('无法获取下一个方块预览画布元素');
+                        reject('无法获取下一个方块预览画布元素');
+                        return;
+                    }
 
-                const canvas = res[0].node;
-                const ctx = canvas.getContext('2d');
+                    const canvas = res[0].node;
+                    const ctx = canvas.getContext('2d');
 
-                // 设置画布尺寸
-                canvas.width = this.data.nextBlockSize;
-                canvas.height = this.data.nextBlockSize;
+                    // 设置画布尺寸
+                    canvas.width = this.data.nextBlockSize;
+                    canvas.height = this.data.nextBlockSize;
 
-                this.nextBlockCanvas = canvas;
-                this.nextBlockCtx = ctx;
+                    this.nextBlockCanvas = canvas;
+                    this.nextBlockCtx = ctx;
 
-                // 绘制下一个方块
-                this.drawNextBlock();
-                console.log('下一个方块预览画布已初始化，尺寸:', canvas.width, 'x', canvas.height);
-            });
+                    // 绘制下一个方块
+                    this.drawNextBlock();
+                    console.log('下一个方块预览画布已初始化，尺寸:', canvas.width, 'x', canvas.height);
+                    resolve();
+                });
+        });
     },
 
     // 游戏主循环
