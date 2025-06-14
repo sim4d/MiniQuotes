@@ -81,23 +81,26 @@ page {
 /* 底部操作区 */
 .action-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   padding: 20px 30px 40px;
   background-color: transparent;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* 操作按钮 */
+/* 操作按钮 - 通用样式 */
 .action-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
   height: 48px;
   border-radius: 24px;
   font-size: 15px;
   font-weight: 500;
   transition: all 0.2s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  width: 80px;
+  margin: 0 15px;
 }
 
 /* 按钮点击效果 */
@@ -122,6 +125,40 @@ page {
 .share-button {
   background-color: rgba(139, 92, 246, 0.1);
   color: #8b5cf6;
+  /* 重置button默认样式 */
+  padding: 0;
+  border: none;
+  outline: none;
+  background-image: none;
+  box-sizing: border-box;
+  line-height: normal;
+  min-height: unset;
+  width: 80px;
+  height: 48px;
+  margin: 0 15px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* 确保button在点击时没有默认边框和高亮 */
+.share-button::after {
+  border: none;
+}
+
+/* 额外样式确保分享按钮不会被微信默认样式影响 */
+button.share-button {
+  margin: 0 15px;
+  width: 80px;
+  height: 48px;
+  min-height: 0;
+  max-height: 48px;
+}
+
+/* 分享按钮内的文本 */
+.share-button text {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
 }
 
 /* 淡入动画 */

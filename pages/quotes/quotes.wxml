@@ -15,8 +15,8 @@
     <view class="action-button copy-button" bindtap="copyQuote">
       <text>复制</text>
     </view>
-    <view class="action-button share-button" open-type="share">
+    <button class="action-button share-button" open-type="share">
       <text>分享</text>
-    </view>
+    </button>
   </view>
 </view>
