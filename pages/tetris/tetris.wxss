@@ -216,7 +216,7 @@ page {
 /* 游戏按钮容器调整 */
 .game-buttons {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   padding: 10px 20px; /* 减小内边距 */
   width: 100%;
   background-color: transparent;

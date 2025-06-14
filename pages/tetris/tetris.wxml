@@ -81,7 +81,7 @@
       </view>
     </view>
     
-    <!-- 游戏操作按钮 - 紧凑排列 -->
+    <!-- 游戏操作按钮 - 均匀排列 -->
     <view class="game-buttons">
       <view class="game-button pause-button" hover-class="button-hover" bindtap="togglePause">
         <text>暂停</text>
@@ -91,7 +91,7 @@
         <text>重新开始</text>
       </view>
       
-      <view class="game-button sound-button" hover-class="button-hover" bindtap="toggleSound">
+      <view class="game-button sound-button" hover-class="button-hover" bindtap="toggleSound" hidden>
         <text>{{isSoundOn ? '关闭音效' : '开启音效'}}</text>
       </view>
     </view>
