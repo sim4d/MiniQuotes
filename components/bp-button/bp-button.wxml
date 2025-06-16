@@ -1,0 +1,8 @@
+<!--components/bp-button/bp-button.wxml-->
+<view class="bp-button" bindtap="onTap">
+  <view class="bp-icon">
+    <view class="heart-icon">❤️</view>
+  </view>
+  <view class="bp-title">BP Monitor</view>
+  <view class="bp-subtitle">血压监测</view>
+</view>

@@ -6,4 +6,7 @@
   <view class="tetris-button-wrapper">
     <tetris-button bindtap="navigateToTetris"></tetris-button>
   </view>
+  <view class="bp-button-wrapper">
+    <bp-button bindtap="navigateToBP"></bp-button>
+  </view>
 </view>

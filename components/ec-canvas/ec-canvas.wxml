@@ -1,0 +1,10 @@
+<canvas
+  class="ec-canvas"
+  canvas-id="{{canvasId}}"
+  bindtouchstart="touchStart"
+  bindtouchmove="touchMove"
+  bindtouchend="touchEnd"
+  type="{{isUseNewCanvas ? '2d' : ''}}"
+  id="{{canvasId}}"
+  style="width: 100%; height: 100%; display: block;"
+></canvas>

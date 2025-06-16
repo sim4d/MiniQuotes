@@ -3,7 +3,8 @@
     "pages/index/index",
     "pages/quotes/quotes",
     "pages/about/about",
-    "pages/tetris/tetris"
+    "pages/tetris/tetris",
+    "pages/bp-monitor/bp-monitor"
   ],
   "window": {
     "backgroundTextStyle": "light",

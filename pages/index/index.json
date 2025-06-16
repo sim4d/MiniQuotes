@@ -4,6 +4,7 @@
     "navigationBarBackgroundColor": "#f8fafc",
     "usingComponents": {
         "quotes-button": "/components/quotes-button/quotes-button",
-        "tetris-button": "/components/tetris-button/tetris-button"
+        "tetris-button": "/components/tetris-button/tetris-button",
+        "bp-button": "/components/bp-button/bp-button"
     }
 }

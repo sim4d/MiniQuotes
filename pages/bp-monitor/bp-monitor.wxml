@@ -1,0 +1,93 @@
+<!--pages/bp-monitor/bp-monitor.wxml-->
+<view class="container">
+  <!-- 头部导航 -->
+  <view class="header">
+    <view class="date-nav">
+      <view class="nav-btn" bindtap="prevPeriod">
+        <text class="nav-icon">‹</text>
+      </view>
+      <view class="date-display" bindtap="goToToday">{{displayDate}}</view>
+      <view class="nav-btn" bindtap="nextPeriod">
+        <text class="nav-icon">›</text>
+      </view>
+    </view>
+    
+    <!-- 视图切换按钮 -->
+    <view class="view-tabs">
+      <view class="tab-btn {{currentView === 'day' ? 'active' : ''}}" 
+            data-view="day" bindtap="switchView">日</view>
+      <view class="tab-btn {{currentView === 'week' ? 'active' : ''}}" 
+            data-view="week" bindtap="switchView">周</view>
+      <view class="tab-btn {{currentView === 'month' ? 'active' : ''}}" 
+            data-view="month" bindtap="switchView">月</view>
+      <view class="tab-btn {{currentView === 'year' ? 'active' : ''}}" 
+            data-view="year" bindtap="switchView">年</view>
+    </view>
+  </view>
+
+  <!-- 图表区域 -->
+  <view class="chart-container" hidden="{{showAddDialog}}">
+    <view class="chart-wrapper">
+      <ec-canvas id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="{{forceOldCanvas}}"></ec-canvas>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <view class="action-btn add-btn" bindtap="showAddRecord">
+      <text class="btn-text">添加记录</text>
+    </view>
+    <view class="action-btn reset-btn" bindtap="resetData">
+      <text class="btn-text">重置数据</text>
+    </view>
+  </view>
+
+</view>
+
+<!-- 添加记录对话框 - 移到最外层 -->
+<view class="modal {{showAddDialog ? 'show' : ''}}" catchtap="hideAddRecord" wx:if="{{showAddDialog}}">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">添加血压记录</text>
+      <view class="close-btn" bindtap="hideAddRecord">×</view>
+    </view>
+    
+    <view class="modal-body">
+      <view class="input-group">
+        <text class="input-label">日期</text>
+        <picker mode="date" value="{{currentDate}}" start="2000-01-01" end="2050-12-31" bindchange="onDateChange">
+          <view class="input-field picker-field">{{currentDate}}</view>
+        </picker>
+      </view>
+
+      <view class="input-group">
+        <text class="input-label">时间</text>
+        <input class="input-field" type="text" placeholder="HH:MM"
+               value="{{newRecord.time}}" data-field="time" bindinput="onInputChange" catchtap="stopPropagation"/>
+      </view>
+      
+      <view class="input-group">
+        <text class="input-label">收缩压 (mmHg)</text>
+        <input class="input-field" type="number" placeholder="如：120"
+               value="{{newRecord.systolic}}" data-field="systolic" bindinput="onInputChange" catchtap="stopPropagation"/>
+      </view>
+      
+      <view class="input-group">
+        <text class="input-label">舒张压 (mmHg)</text>
+        <input class="input-field" type="number" placeholder="如：80"
+               value="{{newRecord.diastolic}}" data-field="diastolic" bindinput="onInputChange" catchtap="stopPropagation"/>
+      </view>
+      
+      <view class="input-group">
+        <text class="input-label">心率 (bpm)</text>
+        <input class="input-field" type="number" placeholder="如：72"
+               value="{{newRecord.heartRate}}" data-field="heartRate" bindinput="onInputChange" catchtap="stopPropagation"/>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <view class="modal-btn cancel-btn" bindtap="hideAddRecord">取消</view>
+      <view class="modal-btn confirm-btn" bindtap="saveRecord">保存</view>
+    </view>
+  </view>
+</view>

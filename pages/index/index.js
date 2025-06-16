@@ -16,5 +16,12 @@ Page({
         wx.navigateTo({
             url: '../tetris/tetris'
         })
+    },
+
+    // 导航到血压监测页面
+    navigateToBP: function () {
+        wx.navigateTo({
+            url: '../bp-monitor/bp-monitor'
+        })
     }
 })
