@@ -88,7 +88,7 @@
   position: relative;
   border-radius: 20rpx;
   overflow: hidden;  /* 确保内容不会溢出 */
-  padding: 10rpx;  /* 减少内边距以提供更多显示空间 */
+  padding: 3rpx;  /* 减少内边距以提供更多显示空间 */
   box-sizing: border-box;
 }
 

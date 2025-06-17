@@ -1059,11 +1059,11 @@ Page({
     };
 
     const lineWidths = {
-      normal: isWindows ? 1 : 1
+      normal: isWindows ? 1 : 0.5
     };
 
     const symbolSizes = {
-      normal: isWindows ? 3 : 4  // 增大手机设备上的数据点大小
+      normal: isWindows ? 3 : 2  // 增大手机设备上的数据点大小
     };
 
     // 使用合适的缩放比例
@@ -1142,8 +1142,9 @@ Page({
       },
       legend: {
         data: ['收缩压', '舒张压', '心率'],
+        left: 'center',
         top: isWindows ? '6%' : '6%',  // 减少顶部间距
-        itemWidth: isWindows ? 8 : 6,  // 缩小图例图标
+        itemWidth: isWindows ? 8 : 5,  // 缩小图例图标
         itemHeight: isWindows ? 5 : 4,  // 缩小图例图标
         textStyle: {
           fontSize: fontSizes.legend,
@@ -1151,7 +1152,7 @@ Page({
         },
         padding: [2, 0, 0, 0],  // 减少内边距
         orient: 'horizontal',
-        itemGap: isWindows ? 6 : 0,  // 减少图例间距
+        itemGap: isWindows ? 6 : 1,  // 减少图例间距
         selectedMode: false // 禁用点击切换
       },
       grid: isWindows ? {
@@ -1266,8 +1267,6 @@ Page({
           showSymbol: true,
           itemStyle: {
             color: '#ff0000',
-            borderWidth: 2,
-            borderColor: '#fff'
           }
         },
         {
@@ -1280,9 +1279,7 @@ Page({
             width: lineWidths.normal
           },
           itemStyle: {
-            color: '#00ff00',
-            borderWidth: 2,
-            borderColor: '#fff'
+            color: '#00ff00'
           },
           symbol: 'circle',
           symbolSize: symbolSizes.normal,
@@ -1299,9 +1296,7 @@ Page({
             width: lineWidths.normal
           },
           itemStyle: {
-            color: '#0000ff',
-            borderWidth: 2,
-            borderColor: '#fff'
+            color: '#0000ff'
           },
           symbol: 'circle',
           symbolSize: symbolSizes.normal,
