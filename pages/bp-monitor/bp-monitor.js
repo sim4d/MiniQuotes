@@ -1005,9 +1005,9 @@ Page({
           const date = new Date(key);
           displayKey = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         } else if (view === 'month') {
-          // 显示为 'DD'
+          // 显示为 'MM-DD'
           const date = new Date(key);
-          displayKey = String(date.getDate()).padStart(2, '0');
+          displayKey = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         } else {
           // 年视图，显示为 'YYYY-MM'，取前5个字符
           displayKey = key.substring(5, 7) + '月';
