@@ -26,6 +26,40 @@ function formatDisplayDate(date) {
   return `${year}年${month}月${day}日 星期${weekDay}`;
 }
 
+
+// 计算血压颜色
+function calculateColor(systolic, diastolic) {
+  // 定义血压级别阈值 (示例，请根据医学标准调整)
+  const normalSysMax = 129;
+  const normalDiaMax = 84;
+
+  const preHyperSysMin = 130;
+  const preHyperSysMax = 139;
+  const preHyperDiaMin = 85;
+  const preHyperDiaMax = 89;
+
+  const hyper1SysMin = 140;
+  const hyper1SysMax = 159;
+  const hyper1DiaMin = 90;
+  const hyper1DiaMax = 99;
+
+  // 默认颜色 (例如，灰色表示数据可能不完整或异常)
+  let color = '#B0B0B0'; // Light Grey
+
+  if (systolic > 0 && diastolic > 0 && systolic > diastolic) {
+    if (systolic <= normalSysMax && diastolic <= normalDiaMax) {
+      color = '#90EE90'; // 正常: Light Green
+    } else if ((systolic >= preHyperSysMin && systolic <= preHyperSysMax) || (diastolic >= preHyperDiaMin && diastolic <= preHyperDiaMax)) {
+      color = '#FFD700'; // 偏高/高血压前期: Gold/Light Orange
+    } else if ((systolic >= hyper1SysMin && systolic <= hyper1SysMax) || (diastolic >= hyper1DiaMin && diastolic <= hyper1DiaMax)) {
+      color = '#FFA07A'; // 1级高血压: Light Salmon (偏红)
+    } else if (systolic >= (hyper1SysMax + 1) || diastolic >= (hyper1DiaMax + 1)) {
+      color = '#FF4500'; // 2级及以上高血压: OrangeRed (更红)
+    }
+  }
+  return color;
+}
+
 Page({
   data: {
     currentView: 'day', // day, week, month, year
@@ -938,90 +972,85 @@ Page({
 
     if (records.length === 0) {
       console.log('没有记录，返回空数据');
-      return { xData: [], systolicData: [], diastolicData: [], heartRateData: [] };
+      return { xData: [], systolicData: [], diastolicData: [], heartRateData: [], customBpSeriesData: [] };
     }
 
     let xData = [];
-    let systolicData = [];
-    let diastolicData = [];
+    let systolicData = []; // Still useful for min/max calculations or if lines are overlaid
+    let diastolicData = []; // Still useful for min/max calculations
     let heartRateData = [];
+    let customBpSeriesData = [];
 
     if (view === 'day') {
-      // 确保记录按时间排序
       records.sort((a, b) => a.timestamp - b.timestamp);
-
-      // 如果数据点太多，可能需要进行采样处理
       let recordsToDisplay = records;
-      if (records.length > 20) {
-        // 对于大量数据，进行简单的降采样
+      if (records.length > 20) { // Simple sampling for many data points in day view
         const samplingInterval = Math.ceil(records.length / 20);
-        recordsToDisplay = [];
-        for (let i = 0; i < records.length; i += samplingInterval) {
-          recordsToDisplay.push(records[i]);
-        }
-        // 确保最后一个点被包含
-        if (recordsToDisplay[recordsToDisplay.length - 1] !== records[records.length - 1]) {
+        recordsToDisplay = records.filter((_, i) => i % samplingInterval === 0);
+        // Ensure the last point is included if not already
+        if (records.length > 0 && recordsToDisplay.length > 0 && recordsToDisplay[recordsToDisplay.length - 1].timestamp !== records[records.length - 1].timestamp) {
           recordsToDisplay.push(records[records.length - 1]);
         }
       }
 
-      // 处理点数据
       recordsToDisplay.forEach(record => {
         xData.push(record.time);
-        systolicData.push(record.systolic);
-        diastolicData.push(record.diastolic);
+        const sys = record.systolic;
+        const dia = record.diastolic;
+        systolicData.push(sys); // Keep for potential y-axis scaling or other uses
+        diastolicData.push(dia); // Keep for potential y-axis scaling
         heartRateData.push(record.heartRate);
+        customBpSeriesData.push({
+          value: [record.time, dia, sys], // [xCategory, diastolicValue, systolicValue]
+          itemStyle: { color: calculateColor(sys, dia) }
+        });
       });
-      console.log('日视图数据处理完成 - X轴:', xData, '收缩压:', systolicData);
-    } else {
-      // 按日期分组并计算平均值
+      console.log('日视图数据处理完成 - X轴:', xData.length, '自定义血压数据:', customBpSeriesData.length);
+    } else { // week, month, year views - aggregate data
       const groupedData = {};
       records.forEach(record => {
-        const key = view === 'week' ? record.date :
-          view === 'month' ? record.date :
-            record.date.substring(0, 7); // 年视图按月分组
-
-        if (!groupedData[key]) {
-          groupedData[key] = {
-            systolic: [],
-            diastolic: [],
-            heartRate: []
-          };
+        let key;
+        if (view === 'week' || view === 'month') {
+          // Group by full date for week/month views to get daily averages
+          key = record.date;
+        } else { // year view
+          // Group by month for year view
+          key = record.date.substring(0, 7); // YYYY-MM
         }
-
+        if (!groupedData[key]) {
+          groupedData[key] = { systolic: [], diastolic: [], heartRate: [], count: 0 };
+        }
         groupedData[key].systolic.push(record.systolic);
         groupedData[key].diastolic.push(record.diastolic);
         groupedData[key].heartRate.push(record.heartRate);
+        groupedData[key].count++;
       });
 
-      // 格式化显示
       Object.keys(groupedData).sort().forEach(key => {
         const data = groupedData[key];
-
-        // 根据视图类型格式化显示的标签
         let displayKey = key;
-        if (view === 'week') {
-          // 显示为 'MM-DD'
+        if (view === 'week' || view === 'month') {
           const date = new Date(key);
-          displayKey = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        } else if (view === 'month') {
-          // 显示为 'MM-DD'
-          const date = new Date(key);
-          displayKey = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        } else {
-          // 年视图，显示为 'YYYY-MM'，取前5个字符
-          displayKey = key.substring(5, 7) + '月';
+          displayKey = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; // MM-DD
+        } else { // year view
+          displayKey = key.substring(5, 7) + '月'; // MM月
         }
-
         xData.push(displayKey);
-        systolicData.push(Math.round(data.systolic.reduce((a, b) => a + b) / data.systolic.length));
-        diastolicData.push(Math.round(data.diastolic.reduce((a, b) => a + b) / data.diastolic.length));
-        heartRateData.push(Math.round(data.heartRate.reduce((a, b) => a + b) / data.heartRate.length));
-      });
-      console.log('非日视图数据处理完成 - X轴:', xData, '收缩压:', systolicData);
-    }
+        const avgSys = Math.round(data.systolic.reduce((a, b) => a + b, 0) / data.count);
+        const avgDia = Math.round(data.diastolic.reduce((a, b) => a + b, 0) / data.count);
+        const avgHr = Math.round(data.heartRate.reduce((a, b) => a + b, 0) / data.count);
 
-    const result = { xData, systolicData, diastolicData, heartRateData };
+        systolicData.push(avgSys);
+        diastolicData.push(avgDia);
+        heartRateData.push(avgHr);
+        customBpSeriesData.push({
+          value: [displayKey, avgDia, avgSys],
+          itemStyle: { color: calculateColor(avgSys, avgDia) }
+        });
+      });
+      console.log('非日视图数据处理完成 - X轴:', xData.length, '自定义血压数据:', customBpSeriesData.length);
+    }
+    const result = { xData, systolicData, diastolicData, heartRateData, customBpSeriesData };
     console.log('最终处理结果:', result);
     return result;
   },
@@ -1127,10 +1156,22 @@ Page({
           return [Math.min(point[0], size.viewSize[0] - dom.offsetWidth - 10), '10%'];
         },
         formatter: function (params) {
-          let result = params[0].name + '<br/>';
+          let result = params[0].name + '<br/>'; // xCategory (time or date)
           params.forEach(function (item) {
-            const unit = item.seriesName === '心率' ? ' bpm' : ' mmHg';
-            result += item.marker + item.seriesName + ': ' + item.value + unit + '<br/>';
+            const seriesName = item.seriesName;
+            if (seriesName === '血压范围') {
+              // item.value for custom series is [xCategory, diastolic, systolic]
+              if (item.value && item.value.length === 3) {
+                result += item.marker + '收缩压: ' + item.value[2] + ' mmHg<br/>';
+                result += item.marker + '舒张压: ' + item.value[1] + ' mmHg<br/>';
+              }
+            } else if (seriesName === '心率') {
+              result += item.marker + seriesName + ': ' + item.value + ' bpm<br/>';
+            } else {
+              // Fallback for other series if any, or original lines if temporarily kept
+              const unit = seriesName === '心率' ? ' bpm' : ' mmHg';
+              result += item.marker + seriesName + ': ' + item.value + unit + '<br/>';
+            }
           });
           return result;
         },
@@ -1141,7 +1182,7 @@ Page({
         padding: [5, 8]
       },
       legend: {
-        data: ['收缩压', '舒张压', '心率'],
+        data: ['血压范围', '心率'], // Updated legend
         left: 'center',
         top: isWindows ? '6%' : '6%',  // 减少顶部间距
         itemWidth: isWindows ? 8 : 5,  // 缩小图例图标
@@ -1208,12 +1249,7 @@ Page({
             const padding = Math.max(dataRange * 0.1, 5); // 10%的数据范围作为边距，最小5个单位
             return Math.max(0, value.min - padding);
           },
-          max: function (value) {
-            // 合理的显示范围，确保数据线条清晰可见
-            const dataRange = value.max - value.min;
-            const padding = Math.max(dataRange * 0.1, 5); // 10%的数据范围作为边距，最小5个单位
-            return value.max + padding;
-          }
+          max: 180 // 固定Y轴血压上限
         },
         {
           type: 'value',
@@ -1241,49 +1277,53 @@ Page({
             const padding = Math.max(dataRange * 0.1, 3); // 10%的数据范围作为边距，最小3个单位
             return Math.max(0, value.min - padding);
           },
-          max: function (value) {
-            // 合理的显示范围，确保数据线条清晰可见
-            const dataRange = value.max - value.min;
-            const padding = Math.max(dataRange * 0.1, 3); // 10%的数据范围作为边距，最小3个单位
-            return value.max + padding;
-          }
+          max: 140 // 固定Y轴心率上限
         }
       ],
       series: [
         {
-          name: '收缩压',
-          type: 'line',
-          data: data.systolicData,
-          smooth: true,
-          lineStyle: {
-            color: '#ff0000',
-            width: lineWidths.normal
+          name: '血压范围',
+          type: 'custom',
+          renderItem: function (params, api) {
+            var categoryValue = api.value(0); // x轴分类值，如 '08:30'
+            var diastolic = api.value(1);    // 舒张压
+            var systolic = api.value(2);     // 收缩压
+
+            // 获取分类值在x轴上的坐标点
+            var pointDiastolic = api.coord([categoryValue, diastolic]);
+            var pointSystolic = api.coord([categoryValue, systolic]);
+
+            // x轴坐标 (条形图中心点)
+            var barCenterX = pointDiastolic[0];
+
+            // 计算条形图宽度 (占分类宽度的60%)
+            var bandWidth = api.size([1, 0])[0]; // 单个分类的宽度
+            var barWidth = bandWidth * 0.6;
+            if (data.xData.length === 1) { // Special case for single data point
+              barWidth = Math.min(bandWidth * 0.6, 30); // Max 30px wide for single point
+            }
+
+
+            return {
+              type: 'rect',
+              shape: {
+                x: barCenterX - barWidth / 2,
+                y: pointSystolic[1], // 矩形顶部的y坐标 (收缩压)
+                width: barWidth,
+                height: pointDiastolic[1] - pointSystolic[1] // 矩形高度 (舒张压y - 收缩压y)
+              },
+              style: api.style(), // 应用数据项中定义的itemStyle (包含颜色)
+              emphasis: {
+                style: {
+                  stroke: 'rgba(0,0,0,0.5)',
+                  lineWidth: 1
+                }
+              }
+            };
           },
-          itemStyle: {
-            color: '#ff0000'
-          },
-          symbol: 'circle',
-          symbolSize: symbolSizes.normal,
-          showSymbol: true,
-          itemStyle: {
-            color: '#ff0000',
-          }
-        },
-        {
-          name: '舒张压',
-          type: 'line',
-          data: data.diastolicData,
-          smooth: true,
-          lineStyle: {
-            color: '#00ff00',
-            width: lineWidths.normal
-          },
-          itemStyle: {
-            color: '#00ff00'
-          },
-          symbol: 'circle',
-          symbolSize: symbolSizes.normal,
-          showSymbol: true
+          data: data.customBpSeriesData,
+          yAxisIndex: 0, // 使用第一个y轴 (血压轴)
+          z: 2 // 控制层叠顺序
         },
         {
           name: '心率',
