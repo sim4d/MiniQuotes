@@ -23,5 +23,12 @@ Page({
         wx.navigateTo({
             url: '../bp-monitor/bp-monitor'
         })
+    },
+
+    // 导航到超慢跑页面
+    navigateToSuperjog: function () {
+        wx.navigateTo({
+            url: '../superjog/superjog'
+        })
     }
 })

@@ -9,4 +9,9 @@
   <view class="bp-button-wrapper">
     <bp-button bindtap="navigateToBP"></bp-button>
   </view>
+  <view class="empty-space"></view>
+  <view class="superjog-button-wrapper">
+    <superjog-button bindtap="navigateToSuperjog"></superjog-button>
+  </view>
+  <view class="empty-space"></view>
 </view>

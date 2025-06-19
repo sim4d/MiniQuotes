@@ -3,7 +3,12 @@
   "libVersion": "3.8.6",
   "packOptions": {
     "ignore": [],
-    "include": []
+    "include": [
+      {
+        "value": "sounds/**/*",
+        "type": "folder"
+      }
+    ]
   },
   "setting": {
     "coverView": true,

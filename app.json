@@ -4,7 +4,10 @@
     "pages/quotes/quotes",
     "pages/about/about",
     "pages/tetris/tetris",
-    "pages/bp-monitor/bp-monitor"
+    "pages/bp-monitor/bp-monitor",
+    "pages/superjog/superjog",
+    "pages/superjog-workout/superjog-workout",
+    "pages/superjog-summary/superjog-summary"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -28,6 +31,9 @@
     "backgroundColor": "#ffffff",
     "borderStyle": "white"
   },
+  "requiredBackgroundModes": [
+    "audio"
+  ],
   "style": "v2",
   "sitemapLocation": "sitemap.json"
 }

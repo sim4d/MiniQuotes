@@ -3,6 +3,7 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
   gap: 20px;
   padding: 20px;
   background-color: #f8fafc;
@@ -11,21 +12,34 @@
 
 .quotes-button-wrapper {
   grid-column: 1 / 2;
+  grid-row: 1 / 2;
   width: 100%;
 }
 
 .tetris-button-wrapper {
   grid-column: 2 / 3;
+  grid-row: 1 / 2;
   width: 100%;
 }
 
 .bp-button-wrapper {
   grid-column: 3 / 4;
+  grid-row: 1 / 2;
   width: 100%;
 }
 
-tetris-button, quotes-button, bp-button {
+.superjog-button-wrapper {
+  margin: 20rpx 0;
+  display: flex;
+  justify-content: center;
+}
+
+.empty-space {
   width: 100%;
-  height: auto;
+  height: 0;
+}
+
+tetris-button, quotes-button, bp-button, superjog-button {
+  margin: 0 auto;
   display: block;
 }
