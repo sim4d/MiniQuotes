@@ -1,0 +1,528 @@
+/* pages/superjog-workout/superjog-workout.wxss */
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow: hidden;
+}
+
+/* 背景动画 */
+.background-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.wave {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: wave-animation 6s ease-in-out infinite;
+}
+
+.wave1 {
+  width: 400rpx;
+  height: 400rpx;
+  top: 20%;
+  left: -100rpx;
+  animation-delay: 0s;
+}
+
+.wave2 {
+  width: 300rpx;
+  height: 300rpx;
+  top: 60%;
+  right: -80rpx;
+  animation-delay: 2s;
+}
+
+.wave3 {
+  width: 500rpx;
+  height: 500rpx;
+  top: 80%;
+  left: 30%;
+  animation-delay: 4s;
+}
+
+@keyframes wave-animation {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-50rpx) scale(1.1);
+    opacity: 0.1;
+  }
+}
+
+/* 主要内容 */
+.content {
+  position: relative;
+  z-index: 2;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 30rpx 30rpx 30rpx 30rpx;
+  color: white;
+}
+
+/* 紧凑布局 - 减少上部空白 */
+.compact-layout {
+  padding-top: 0rpx; /* Further reduce top padding */
+}
+
+.compact-layout .status-section {
+  margin-bottom: 5rpx;
+}
+
+.compact-layout .duration-selector {
+  margin: 5rpx 0;
+}
+
+.compact-layout .animation-section {
+  flex-grow: 0; /* Prevent excessive growing */
+  flex-shrink: 0; /* Prevent shrinking if content is larger */
+  flex-basis: auto; /* Size based on content */
+  margin: 40rpx 0 40rpx 0; /* Adjust vertical spacing */
+}
+
+/* 状态区域 */
+.status-section {
+  text-align: center;
+  margin-bottom: 10rpx;
+}
+
+.status-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 5rpx;
+  opacity: 0.9;
+}
+
+.bpm-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.bpm-indicator.active {
+  opacity: 1;
+}
+
+.bpm-dot {
+  width: 16rpx;
+  height: 16rpx;
+  background: #10b981;
+  border-radius: 50%;
+  animation: bpm-pulse 0.333s ease-in-out infinite;
+}
+
+.bpm-text {
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+@keyframes bpm-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.7;
+  }
+}
+
+/* 时间选择器 */
+.duration-selector {
+  text-align: center;
+  margin: 15rpx 0;
+}
+
+.duration-label {
+  font-size: 28rpx;
+  opacity: 0.8;
+  margin-bottom: 15rpx;
+}
+
+.duration-swiper {
+  height: 140rpx;
+}
+
+.duration-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.duration-card {
+  width: 240rpx;
+  height: 120rpx;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.duration-card.active {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+  box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.2);
+}
+
+.duration-value {
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.duration-hint {
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  opacity: 0.6;
+}
+
+/* 时间显示区域 */
+.time-section {
+  text-align: center;
+  margin-bottom: 15rpx;
+}
+
+.time-display {
+  margin-bottom: 10rpx;
+}
+
+.main-time .time-label {
+  font-size: 28rpx;
+  opacity: 0.8;
+  margin-bottom: 8rpx;
+}
+
+.main-time .time-value {
+  font-size: 70rpx;
+  font-weight: 700;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  text-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.3);
+}
+
+.sub-time .time-label {
+  font-size: 24rpx;
+  opacity: 0.7;
+  margin-bottom: 4rpx;
+}
+
+.sub-time .time-value {
+  font-size: 32rpx;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+/* 动画区域 */
+.animation-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 10rpx 0 50rpx 0; /* 增加底部间距 */
+}
+
+.breathing-circle {
+  width: 280rpx; /* 放大动画圆 */
+  height: 280rpx; /* 放大动画圆 */
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 40rpx;
+  transition: all 0.3s ease;
+}
+
+.breathing-circle.active {
+  animation: breathing-animation 4s ease-in-out infinite;
+}
+
+.inner-circle {
+  width: 200rpx; /* 放大内圆 */
+  height: 200rpx; /* 放大内圆 */
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10rpx);
+}
+
+.runner-icon {
+  font-size: 60rpx; /* 放大跑步图标 */
+  filter: drop-shadow(0 4rpx 8rpx rgba(0, 0, 0, 0.3));
+}
+
+@keyframes breathing-animation {
+  0%, 100% {
+    transform: scale(1);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* 步频指示器 */
+.step-indicators {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.step-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transition: all 0.1s ease;
+}
+
+.step-dot.active {
+  background: #10b981;
+  transform: scale(1.5);
+  box-shadow: 0 0 20rpx rgba(16, 185, 129, 0.6);
+}
+
+/* 控制区域 */
+.controls-section {
+  margin-top: auto;
+  margin-bottom: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 0 20rpx;
+}
+
+/* Added for compact layout to pull controls up */
+.compact-layout .controls-section {
+  margin-top: 0; /* Pulls it up against the element above (animation section) */
+  margin-bottom: 60rpx; /* Ensure space at the bottom, e.g., for iPhone home indicator */
+}
+
+/* 按钮水平排列 */
+.buttons-row {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+
+/* 主按钮容器 */
+.main-btn-container {
+  position: relative;
+  width: 200rpx;
+  height: 200rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 圆形进度条 */
+.circular-progress {
+  position: absolute;
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.progress-circle {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  transform: rotate(-90deg);
+  transition: background 0.1s linear;
+}
+
+/* 主按钮 */
+.main-btn {
+  width: 180rpx !important;
+  height: 180rpx !important;
+  border-radius: 50%;
+  color: white;
+  font-size: 34rpx;
+  font-weight: 700;
+  text-align: center;
+  line-height: 180rpx;
+  padding: 0;
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  border: none;
+  z-index: 2;
+  position: relative;
+}
+
+.main-btn.start {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.main-btn.running {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.main-btn.paused {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+}
+
+/* 长按时按钮变红 */
+.main-btn.exit-pressing {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  transform: scale(0.95);
+}
+
+.main-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.4);
+}
+
+/* 暂停提示 */
+.pause-hint {
+  margin-top: 10rpx;
+  text-align: center;
+  font-size: 24rpx;
+  opacity: 0.7;
+}
+
+/* 提示区域 */
+.tips-section {
+  margin-top: 10rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tip-text {
+  font-size: 24rpx;
+  margin-bottom: 8rpx;
+  opacity: 0.8;
+}
+
+/* 鼓励信息 */
+.encouragement {
+  text-align: center;
+  margin: 20rpx 0 10rpx;
+}
+
+.encouragement-text {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: white;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.3);
+}
+
+/* 模态框 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6rpx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: modal-fade-in 0.3s ease-out;
+}
+
+.modal-content {
+  width: 80%;
+  background: white;
+  border-radius: 24rpx;
+  padding: 40rpx 30rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  animation: modal-slide-in 0.3s ease-out;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  color: #1e293b;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.modal-text {
+  color: #64748b;
+  font-size: 28rpx;
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 20rpx;
+}
+
+.modal-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 40rpx;
+  font-weight: 600;
+  font-size: 28rpx;
+  line-height: 80rpx;
+  letter-spacing: 1px;
+}
+
+.modal-btn::after {
+  display: none;
+}
+
+.cancel-btn {
+  color: #64748b;
+  background: #f1f5f9;
+  border: none;
+}
+
+.confirm-btn {
+  color: white;
+  background: #ef4444;
+  border: none;
+}
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-slide-in {
+  from {
+    transform: translateY(50rpx);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+} 

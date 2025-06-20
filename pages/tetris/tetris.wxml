@@ -91,7 +91,7 @@
         <text>重新开始</text>
       </view>
       
-      <view class="game-button sound-button" hover-class="button-hover" bindtap="toggleSound" hidden>
+      <view class="game-button sound-button" hover-class="button-hover" bindtap="toggleSound">
         <text>{{isSoundOn ? '关闭音效' : '开启音效'}}</text>
       </view>
     </view>

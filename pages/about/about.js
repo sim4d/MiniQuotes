@@ -66,7 +66,7 @@ Page({
      */
     onShareAppMessage() {
         return {
-            title: 'MiniQuotes',
+            title: 'MiniVerse',
             path: '/pages/about/about'
         }
     },

@@ -1,9 +1,17 @@
-# Mini Quotes
-名人名言微信小程序
+# MiniVerse
 
-这是2025新版，希望借助 TRAE 等编程工具，提供更多的功能。
+A versatile mini-app collection featuring quotes, games, health monitoring, and fitness tracking tools.
 
-旧版仍然保留在 [sim4d/mini-quotes.git](../../../mini-quotes) 项目中。
+## Features
+
+- **Quotes**: Inspirational quotes collection
+- **Tetris**: Classic tetris game
+- **BP Monitr**: Blood pressure monitoring tool
+- **SuperJog**: Slow jogging fitness tracker
+
+## Overview
+
+MiniVerse is a WeChat mini-program that combines various useful tools and entertainment options in one convenient application. From inspirational quotes to health monitoring and games, MiniVerse offers a diverse collection of mini-apps to enhance your daily life.
 
 ## 开发环境
 - 准备 sandbox (要求 pub key 已经在 GitHub 账户 Profile 设置好)
@@ -36,10 +44,10 @@ git clone git@github.com:sim4d/MiniQuotes.git MiniQuotes
 ssh -T -p 443 git@ssh.github.com
 ```
 
-若显示“# Hi {USERNAME}! You've successfully authenticated, but GitHub does not # provide shell access.”，则证明可以通过HTTPS连接。
+若显示"# Hi {USERNAME}! You've successfully authenticated, but GitHub does not # provide shell access."，则证明可以通过HTTPS连接。
 
 #### ​​启用通过HTTPS的SSH连接​​：
-若上述方法可行，可覆盖SSH设置来强制与GitHub.com的任何连接均通过该服务器和端口运行。打开SSH的config文档（通常位于“~/.ssh/config”），添加以下字段：
+若上述方法可行，可覆盖SSH设置来强制与GitHub.com的任何连接均通过该服务器和端口运行。打开SSH的config文档（通常位于"~/.ssh/config"），添加以下字段：
 
 ```bash
 Host github.com

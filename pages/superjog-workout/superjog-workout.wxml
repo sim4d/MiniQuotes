@@ -1,0 +1,110 @@
+<!--pages/superjog-workout/superjog-workout.wxml-->
+<view class="container">
+  <!-- 背景动画 -->
+  <view class="background-animation">
+    <view class="wave wave1"></view>
+    <view class="wave wave2"></view>
+    <view class="wave wave3"></view>
+  </view>
+
+  <!-- 主要内容区域 -->
+  <view class="content compact-layout">
+    <!-- 状态显示 -->
+    <view class="status-section">
+      <view class="status-text">{{isRunning ? '锻炼进行中' : isPaused ? '已暂停' : '准备开始'}}</view>
+      <view class="bpm-indicator {{isRunning ? 'active' : ''}}">
+        <view class="bpm-dot"></view>
+        <text class="bpm-text">180 BPM</text>
+      </view>
+    </view>
+
+    <!-- 时间显示区域 - 锻炼中显示 -->
+    <view class="time-section" wx:if="{{isRunning || isPaused}}">
+      <!-- 剩余时间 -->
+      <view class="time-display main-time">
+        <view class="time-label">剩余时间</view>
+        <view class="time-value">{{remainingTime}}</view>
+      </view>
+      
+      <!-- 已用时间 -->
+      <view class="time-display sub-time">
+        <view class="time-label">已进行</view>
+        <view class="time-value">{{elapsedTime}}</view>
+      </view>
+    </view>
+
+    <!-- 中央动画区域 -->
+    <view class="animation-section">
+      <view class="breathing-circle {{isRunning ? 'active' : ''}}">
+        <view class="inner-circle">
+          <view class="runner-icon">🏃‍♂️</view>
+        </view>
+      </view>
+      
+      <!-- 步频指示器 -->
+      <view class="step-indicators">
+        <view class="step-dot {{stepBeat === 1 ? 'active' : ''}}" wx:if="{{isRunning}}"></view>
+        <view class="step-dot {{stepBeat === 2 ? 'active' : ''}}" wx:if="{{isRunning}}"></view>
+        <view class="step-dot {{stepBeat === 3 ? 'active' : ''}}" wx:if="{{isRunning}}"></view>
+        <view class="step-dot {{stepBeat === 4 ? 'active' : ''}}" wx:if="{{isRunning}}"></view>
+      </view>
+    </view>
+
+    <!-- 单一控制按钮区域 -->
+    <view class="controls-section">
+      <!-- 水平布局按钮区 -->
+      <view class="buttons-row">
+        <!-- 主控制按钮 - 单一按钮 -->
+        <view class="main-btn-container {{isLongPressing ? 'pressing' : ''}}">
+          <!-- 圆形进度条 -->
+          <view wx:if="{{isLongPressing}}" class="circular-progress">
+            <view class="progress-circle" style="background: conic-gradient(#ef4444 {{longPressPercent}}%, transparent 0%);"></view>
+          </view>
+          
+          <button 
+            class="control-btn main-btn {{isPaused ? 'paused' : isRunning ? 'running' : 'start'}} {{isLongPressing ? 'exit-pressing' : ''}}" 
+            bindtap="handleMainButton"
+            bindlongpress="handleLongPress"
+            bindtouchend="handleTouchEnd"
+            bindtouchcancel="handleTouchEnd"
+          >
+            <block wx:if="{{!isRunning && !isPaused}}">开始</block>
+            <block wx:elif="{{isRunning}}">暂停</block>
+            <block wx:elif="{{isPaused && !isLongPressing}}">继续</block>
+            <block wx:elif="{{isPaused && isLongPressing}}">结束</block>
+          </button>
+        </view>
+      </view>
+      
+      <!-- 暂停时提示 -->
+      <view class="pause-hint" wx:if="{{isPaused && !isLongPressing}}">
+        <text>短按继续，长按3秒结束锻炼</text>
+      </view>
+
+    </view>
+
+    <!-- 提示信息 - 精简显示 -->
+    <view class="tips-section" wx:if="{{!isRunning && !isPaused}}">
+      <text class="tip-text">🎵 跟随节拍保持180步/分钟</text>
+      <text class="tip-text">🌬️ 保持自然呼吸节律</text>
+      <text class="tip-text">👟 小步幅，轻松前进</text>
+    </view>
+
+    <!-- 鼓励信息 -->
+    <view class="encouragement" wx:if="{{isRunning}}">
+      <text class="encouragement-text">{{encouragementText}}</text>
+    </view>
+  </view>
+
+  <!-- 确认退出弹窗 -->
+  <view class="modal-mask" wx:if="{{showExitModal}}" bindtap="hideExitModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-title">确认结束锻炼？</view>
+      <view class="modal-text">您已锻炼 {{elapsedTime}}，确定要结束吗？</view>
+      <view class="modal-buttons">
+        <button class="modal-btn cancel-btn" bindtap="hideExitModal">继续锻炼</button>
+        <button class="modal-btn confirm-btn" bindtap="confirmExit">结束锻炼</button>
+      </view>
+    </view>
+  </view>
+</view> 

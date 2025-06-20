@@ -2,7 +2,7 @@
 Page({
   data: {
     quotesAuthor: null,
-    allQuotes: null,
+    quotesContent: null,
     currentQuote: null,
     quoteItr: 0
   },
@@ -10,14 +10,14 @@ Page({
   onLoad(options) {
     const appInstance = getApp();
     this.setData({
-      allQuotes: appInstance.globalData.allQuotes,
+      quotesContent: appInstance.globalData.quotesContent,
       quotesAuthor: appInstance.globalData.quotesAuthor,
-      currentQuote: appInstance.globalData.allQuotes[0]
+      currentQuote: appInstance.globalData.quotesContent[0]
     });
   },
   // 刷新 quote，随机选择一句新的
   refreshQuote() {
-    const quotes = this.data.allQuotes;
+    const quotes = this.data.quotesContent;
     if (!quotes || quotes.length === 0) return;
 
     // 生成一个不同于当前的随机索引

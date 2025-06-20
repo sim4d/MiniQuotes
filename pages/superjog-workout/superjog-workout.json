@@ -1,0 +1,8 @@
+{
+    "navigationBarTitleText": "超慢跑锻炼",
+    "navigationBarTextStyle": "white",
+    "navigationBarBackgroundColor": "#667eea",
+    "disableScroll": true,
+    "disableSwipeBack": true,
+    "usingComponents": {}
+}

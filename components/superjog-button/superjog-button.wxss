@@ -1,4 +1,4 @@
-/* components/bp-button/bp-button.wxss */
+/* components/superjog-button/superjog-button.wxss */
 :host {
   display: block;
   width: 100%;
@@ -17,23 +17,22 @@
   box-sizing: border-box;
 }
 
-.bp-button {
+.superjog-button {
   width: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: 16px;
   font-weight: 500;
-  color: #e74c3c;
+  color: #4c9eea;
   letter-spacing: 0.5px;
 }
 
-.bp-button::after {
+.superjog-button::after {
   border: none;
 }
 
-.bp-button::before {
+.superjog-button::before {
   content: '';
   position: absolute;
   top: -50%;
@@ -45,27 +44,11 @@
   transition: opacity 0.3s ease;
 }
 
-.bp-button:active {
+.superjog-button:active {
   transform: scale(0.97);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
-.bp-button:active::before {
+.superjog-button:active::before {
   opacity: 1;
-}
-
-.heart-icon {
-  font-size: 20px;
-  margin-bottom: 4px;
-}
-
-.bp-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #e74c3c;
-}
-
-.bp-subtitle {
-  font-size: 12px;
-  color: rgba(231, 76, 60, 0.8);
-}
+} 

@@ -224,13 +224,13 @@ Page({
     initSounds: function () {
         // 懒加载音效，在需要时创建
         this.soundSources = {
-            move: 'https://assets.easygoing.fun/sounds/tetris/move.mp3',
-            rotate: 'https://assets.easygoing.fun/sounds/tetris/rotate.mp3',
-            drop: 'https://assets.easygoing.fun/sounds/tetris/drop.mp3',
-            clear: 'https://assets.easygoing.fun/sounds/tetris/clear.mp3',
-            gameOver: 'https://assets.easygoing.fun/sounds/tetris/game_over.mp3',
-            levelUp: 'https://assets.easygoing.fun/sounds/tetris/level_up.mp3',
-            highScore: 'https://assets.easygoing.fun/sounds/tetris/high_score.mp3'
+            move: '/sounds/move.wav',
+            rotate: '/sounds/rotate.wav',
+            drop: '/sounds/drop.wav',
+            clear: '/sounds/clear.wav',
+            gameOver: '/sounds/game_over.wav',
+            levelUp: '/sounds/level_up.wav',
+            highScore: '/sounds/high_score.wav'
         };
     },
 

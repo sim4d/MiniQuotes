@@ -1,0 +1,133 @@
+<!--pages/superjog-summary/superjog-summary.wxml-->
+<view class="container">
+  <!-- 背景装饰 -->
+  <view class="background-decoration">
+    <view class="celebration-icon">🎉</view>
+    <view class="sparkle sparkle1">✨</view>
+    <view class="sparkle sparkle2">⭐</view>
+    <view class="sparkle sparkle3">✨</view>
+  </view>
+
+  <!-- 主要内容 -->
+  <view class="content">
+    <!-- 完成状态 -->
+    <view class="completion-section">
+      <view class="completion-icon {{isCompleted ? 'completed' : 'partial'}}">
+        {{isCompleted ? '✅' : '⏰'}}
+      </view>
+      <view class="completion-title">
+        {{isCompleted ? '锻炼完成！' : '本次锻炼结束'}}
+      </view>
+      <view class="completion-subtitle">
+        {{isCompleted ? '恭喜你完成了本次超慢跑训练' : '每一步都是进步，继续加油！'}}
+      </view>
+    </view>
+
+    <!-- 锻炼数据卡片 -->
+    <view class="stats-card">
+      <view class="stats-header">
+        <text class="stats-title">本次锻炼数据</text>
+        <view class="stats-date">{{currentDate}}</view>
+      </view>
+      
+      <view class="stats-grid">
+        <view class="stat-item">
+          <view class="stat-icon">⏱️</view>
+          <view class="stat-info">
+            <view class="stat-value">{{actualDuration}} 分钟</view>
+            <view class="stat-label">实际锻炼</view>
+          </view>
+        </view>
+        
+        <view class="stat-item">
+          <view class="stat-icon">🎯</view>
+          <view class="stat-info">
+            <view class="stat-value">{{targetDuration}} 分钟</view>
+            <view class="stat-label">目标时长</view>
+          </view>
+        </view>
+        
+        <view class="stat-item">
+          <view class="stat-icon">📊</view>
+          <view class="stat-info">
+            <view class="stat-value">{{completionRate}}%</view>
+            <view class="stat-label">完成度</view>
+          </view>
+        </view>
+        
+        <view class="stat-item">
+          <view class="stat-icon">🔥</view>
+          <view class="stat-info">
+            <view class="stat-value">{{estimatedCalories}}</view>
+            <view class="stat-label">预估卡路里</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 总体进度 -->
+    <view class="progress-section">
+      <view class="section-title">总体进度</view>
+      <view class="progress-grid">
+        <view class="progress-item">
+          <view class="progress-number">{{totalDays}}</view>
+          <view class="progress-label">连续天数</view>
+          <view class="progress-trend {{totalDays > 0 ? 'positive' : ''}}">
+            {{totalDays > 0 ? '↗️' : '🆕'}}
+          </view>
+        </view>
+        
+        <view class="progress-item">
+          <view class="progress-number">{{totalMinutes}}</view>
+          <view class="progress-label">累计分钟</view>
+          <view class="progress-trend positive">↗️</view>
+        </view>
+        
+        <view class="progress-item">
+          <view class="progress-number">{{totalWorkouts}}</view>
+          <view class="progress-label">锻炼次数</view>
+          <view class="progress-trend positive">↗️</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 鼓励信息 -->
+    <view class="encouragement-section">
+      <view class="encouragement-card">
+        <view class="encouragement-icon">💪</view>
+        <view class="encouragement-text">{{encouragementMessage}}</view>
+        <view class="encouragement-tip">{{healthTip}}</view>
+      </view>
+    </view>
+
+    <!-- 成就展示 -->
+    <view class="achievement-section" wx:if="{{newAchievement}}">
+      <view class="achievement-card">
+        <view class="achievement-badge">🏆</view>
+        <view class="achievement-title">解锁新成就！</view>
+        <view class="achievement-name">{{newAchievement.name}}</view>
+        <view class="achievement-desc">{{newAchievement.description}}</view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-section">
+      <button class="action-btn secondary-btn" open-type="share">
+        <view class="btn-icon">📱</view>
+        <text class="btn-text">分享成果</text>
+      </button>
+      
+      <button class="action-btn primary-btn" bindtap="backToMain">
+        <view class="btn-icon">🏃‍♂️</view>
+        <text class="btn-text">继续锻炼</text>
+      </button>
+    </view>
+
+    <!-- 返回首页按钮 -->
+    <view class="navigation-section">
+      <button class="nav-btn" bindtap="backToHome">
+        <text class="nav-text">返回首页</text>
+      </button>
+    </view>
+  </view>
+</view> 

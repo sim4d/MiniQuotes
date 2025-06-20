@@ -1,0 +1,121 @@
+<!--pages/superjog/superjog.wxml-->
+<view class="container">
+  <!-- 头部标题 -->
+  <view class="header">
+    <text class="title">超慢跑训练</text>
+    <text class="subtitle">享受轻松愉悦的健康时光</text>
+  </view>
+
+  <!-- 用户数据卡片 -->
+  <view class="stats-card">
+    <view class="stats-item">
+      <view class="stats-number">{{continuousDays}}</view>
+      <view class="stats-label">连续天数</view>
+    </view>
+    <view class="stats-divider"></view>
+    <view class="stats-item">
+      <view class="stats-number">{{totalMinutes}}</view>
+      <view class="stats-label">累计分钟</view>
+    </view>
+    <view class="stats-divider"></view>
+    <view class="stats-item">
+      <view class="stats-number">{{lastWorkout}}</view>
+      <view class="stats-label">上次锻炼</view>
+    </view>
+  </view>
+
+  <!-- 时长选择 -->
+  <view class="duration-section">
+    <view class="section-title">选择锻炼时长</view>
+    <scroll-view
+      class="duration-scroll"
+      scroll-x="true"
+      scroll-y="false"
+      enable-flex="true"
+      show-scrollbar="false"
+      enhanced="true"
+      bounces="false"
+      scroll-with-animation="true"
+    >
+      <view class="duration-options">
+        <view
+          wx:for="{{durationOptions}}"
+          wx:key="value"
+          class="duration-option {{selectedDuration === item.value ? 'selected' : ''}}"
+          bindtap="selectDuration"
+          data-duration="{{item.value}}"
+        >
+          <view class="duration-time">{{item.label}}</view>
+          <view class="duration-desc">{{item.desc}}</view>
+        </view>
+      </view>
+    </scroll-view>
+    <view class="swipe-hint">← 左右滑动选择时间 →</view>
+  </view>
+
+  <!-- 开始按钮区域 - 放在中间 -->
+  <view class="action-section">
+    <button 
+      class="start-button {{selectedDuration ? 'active' : ''}}" 
+      bindtap="startWorkout"
+      disabled="{{!selectedDuration}}"
+    >
+      <view class="start-icon">▶️</view>
+      <text class="start-text">开始锻炼</text>
+    </button>
+  </view>
+  
+  <!-- 益处介绍 -->
+  <view class="benefits-section">
+    <view class="section-title">超慢跑的益处</view>
+    <view class="benefits-grid">
+      <view class="benefit-item">
+        <view class="benefit-icon">❤️</view>
+        <text class="benefit-text">改善心血管健康</text>
+      </view>
+      <view class="benefit-item">
+        <view class="benefit-icon">🔥</view>
+        <text class="benefit-text">温和燃烧脂肪</text>
+      </view>
+      <view class="benefit-item">
+        <view class="benefit-icon">💪</view>
+        <text class="benefit-text">增强肌肉耐力</text>
+      </view>
+      <view class="benefit-item">
+        <view class="benefit-icon">😌</view>
+        <text class="benefit-text">缓解压力放松</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 正确方法说明 -->
+  <view class="guide-section">
+    <view class="guide-header" bindtap="toggleGuide">
+      <text class="guide-title">如何正确进行超慢跑？</text>
+      <view class="guide-arrow {{showGuide ? 'expanded' : ''}}">▼</view>
+    </view>
+    <view class="guide-content {{showGuide ? 'show' : 'hide'}}">
+      <view class="guide-item">
+        <view class="guide-icon">👟</view>
+        <view class="guide-text">
+          <view class="guide-point">步频控制</view>
+          <view class="guide-detail">保持180步/分钟的节奏，小步幅快步频</view>
+        </view>
+      </view>
+      <view class="guide-item">
+        <view class="guide-icon">🌬️</view>
+        <view class="guide-text">
+          <view class="guide-point">呼吸技巧</view>
+          <view class="guide-detail">鼻呼鼻吸，保持自然舒适的呼吸节律</view>
+        </view>
+      </view>
+      <view class="guide-item">
+        <view class="guide-icon">🏃‍♀️</view>
+        <view class="guide-text">
+          <view class="guide-point">姿势要领</view>
+          <view class="guide-detail">挺胸收腹，双臂自然摆动，前脚掌着地</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

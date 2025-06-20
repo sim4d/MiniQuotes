@@ -1,18 +1,18 @@
 // app.js
 App({
-  onLaunch() {
-    // 展示本地存储能力
-    // 登录
-    wx.login({
-      success: res => {
-        // 发送 res.code 到后台换取 openId, sessionKey, unionId
-      }
-    })
-  },
   globalData: {
+    appName: "MiniVerse",
+    appDescription: "A versatile mini-app collection featuring quotes, games, health monitoring, and fitness tracking tools.",
     userInfo: null,
     quotesAuthor: 'Eckhart Tolle',
-    allQuotes: [
+    quotesContent: [
+      'Life will give you whatever experience is most helpful for the evolution of your consciousness.',
+      'Sometimes letting things go is an act of far greater power than defending or hanging on.',
+      'Acknowledging the good that you already have in your life is the foundation for all abundance.',
+      'The power for creating a better future is contained in the present moment: You create a good future by creating a good present.',
+      'People don\'t realize that now is all there ever is; there is no past or future except as memory or anticipation in your mind.',
+      'True happiness is found in simple, seemingly unremarkable things.',
+      'Being at ease with not knowing is crucial for answers to come to you.',
       'As soon as you honor the present moment, all unhappiness and struggle dissolve.',
       'It is not uncommon for people to spend their whole life waiting to start living.',
       'What the ego sees as weakness is your Being in its purity, innocence.',
@@ -32,5 +32,22 @@ App({
       'Whenever you interact with people, don\'t be there primarily as a function or a role, but as the field of conscious Presence.',
       'That is the real spiritual awakening, when something emerges from within you that is deeper than who you thought you were.'
     ]
+  },
+  onLaunch() {
+    // 展示本地存储能力
+    const logs = wx.getStorageSync('logs') || []
+    logs.unshift(Date.now())
+    wx.setStorageSync('logs', logs)
+
+    // 登录
+    wx.login({
+      success: res => {
+        // 发送 res.code 到后台换取 openId, sessionKey, unionId
+      }
+    })
+
+    wx.setInnerAudioOption({
+      obeyMuteSwitch: false
+    })
   }
 })
