@@ -3,8 +3,9 @@
   <view class="quotes-button-wrapper">
     <quotes-button bindtap="navigateToQuotes"></quotes-button>
   </view>
-  <view class="tetris-button-wrapper">
-    <tetris-button bindtap="navigateToTetris"></tetris-button>
+  <view class="tetris-button-wrapper" bindtap="onTetrisAreaTap" data-tap-time="{{0}}">
+    <!-- Tetris按钮设为不可见，但区域依然可点击 -->
+    <tetris-button style="visibility: hidden;"></tetris-button>
   </view>
   <view class="bp-button-wrapper">
     <bp-button bindtap="navigateToBP"></bp-button>

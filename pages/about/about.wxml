@@ -2,10 +2,10 @@
   <!-- About内容区域 -->
   <view class="about-section">
     <view class="about-card">
-      <text class="title">MiniVerse</text>
+      <text class="title" bindtap="onTitleTap" data-tap-time="{{0}}">MiniVerse</text>
       <text class="content">
         我们致力于为用户提供有启发性的内容，帮助您在日常生活中获得灵感和动力。\n
-        MiniVerse provides a broad variety of mini-apps to enhance your daily life, including inspirational quotes, health monitoring, and games.
+        MiniVerse provides a broad variety of mini-apps to enrich and elevate your daily life, including inspirational quotes, health monitoring, and games.
       </text>
     </view>
   </view>

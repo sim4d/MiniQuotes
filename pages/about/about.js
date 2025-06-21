@@ -4,7 +4,8 @@ Page({
      */
     data: {
         adLoaded: false,
-        adImage: '/images/ad-placeholder.png'
+        adImage: '/images/ad-placeholder.png',
+        lastTapTime: 0 // 记录上次点击时间
     },
 
     /**
@@ -69,6 +70,26 @@ Page({
             title: 'MiniVerse',
             path: '/pages/about/about'
         }
+    },
+
+    /**
+     * 标题点击事件处理
+     */
+    onTitleTap: function (e) {
+        const currentTime = new Date().getTime()
+        const lastTapTime = this.data.lastTapTime
+        
+        // 如果两次点击间隔小于300ms，认为是双击
+        if (currentTime - lastTapTime < 300) {
+            // 进入Tetris游戏
+            wx.navigateTo({
+                url: '../tetris/tetris'
+            })
+        }
+        
+        this.setData({
+            lastTapTime: currentTime
+        })
     },
 
     /**

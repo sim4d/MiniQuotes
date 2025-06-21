@@ -11,7 +11,7 @@ A versatile mini-app collection featuring quotes, games, health monitoring, and 
 
 ## Overview
 
-MiniVerse is a WeChat mini-program that combines various useful tools and entertainment options in one convenient application. From inspirational quotes to health monitoring and games, MiniVerse offers a diverse collection of mini-apps to enhance your daily life.
+MiniVerse is a WeChat mini-program that combines various useful tools and entertainment options in one convenient application. From inspirational quotes to health monitoring and games, MiniVerse offers a diverse collection of mini-apps to enrich and elevate your daily life.
 
 ## 开发环境
 - 准备 sandbox (要求 pub key 已经在 GitHub 账户 Profile 设置好)
