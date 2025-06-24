@@ -15,4 +15,9 @@
     <superjog-button bindtap="navigateToSuperjog"></superjog-button>
   </view>
   <view class="empty-space"></view>
+  <view class="kjung-button-wrapper">
+    <kjung-button bindtap="navigateToKJung"></kjung-button>
+  </view>
+  <view class="empty-space"></view>
+  <view class="empty-space"></view>
 </view>

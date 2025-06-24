@@ -46,5 +46,12 @@ Page({
         wx.navigateTo({
             url: '../superjog/superjog'
         })
+    },
+
+    // 导航到K.Jung页面
+    navigateToKJung: function () {
+        wx.navigateTo({
+            url: '../kjung/kjung'
+        })
     }
 })

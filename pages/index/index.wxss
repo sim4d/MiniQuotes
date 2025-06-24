@@ -3,7 +3,7 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   gap: 20px;
   padding: 20px;
   background-color: #f8fafc;
@@ -34,12 +34,18 @@
   width: 100%;
 }
 
+.kjung-button-wrapper {
+  grid-column: 1 / 2;
+  grid-row: 3 / 4;
+  width: 100%;
+}
+
 .empty-space {
   width: 100%;
   height: 0;
 }
 
-tetris-button, quotes-button, bp-button, superjog-button {
+tetris-button, quotes-button, bp-button, superjog-button, kjung-button {
   margin: 0 auto;
   display: block;
 }

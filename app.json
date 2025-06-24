@@ -7,7 +7,8 @@
     "pages/bp-monitor/bp-monitor",
     "pages/superjog/superjog",
     "pages/superjog-workout/superjog-workout",
-    "pages/superjog-summary/superjog-summary"
+    "pages/superjog-summary/superjog-summary",
+    "pages/kjung/kjung"
   ],
   "window": {
     "backgroundTextStyle": "light",
