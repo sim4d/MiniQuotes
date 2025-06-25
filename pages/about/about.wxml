@@ -3,11 +3,11 @@
   <view class="about-section">
     <view class="about-card">
       <text class="title" bindtap="onTitleTap" data-tap-time="{{0}}">MiniVerse</text>
-      <text class="content">
+      <text class="copyright" bindtap="showReferences">
         我们致力于为用户提供有启发性的内容，帮助您在日常生活中获得灵感和动力。\n
-        MiniVerse provides a broad variety of mini-apps to enrich and elevate your daily life, including inspirational quotes, health monitoring, and games.
+        MiniVerse provides a broad variety of mini-apps to enrich and elevate your daily life, including inspirational quotes, health monitoring, and games.\n
+        (C) Sim4ai.com 2025      
       </text>
-      <text class="copyright" bindtap="showReferences">(C) Simford 2025</text>
     </view>
   </view>
 
@@ -15,12 +15,11 @@
   <view class="modal-mask" wx:if="{{showModal}}" bindtap="hideReferences"></view>
   <view class="modal-container" wx:if="{{showModal}}">
     <view class="modal-content">
-      <view class="modal-title">References</view>
-      <view class="reference-item" bindtap="copyUrl" data-url="https://www.bilibili.com/video/BV1qtVfzLExr/">1. www.bilibili.com/video/BV1qtVfzLExr/</view>
+      <view class="modal-title">(C) Sim4ai.com 2025</view>
+      <view class="reference-item" bindtap="copyUrl" data-url="https://gemini.sim4ai.com">1. gemini.sim4ai.com</view>
       <view class="reference-item" bindtap="copyUrl" data-url="https://research.sim4ai.com">2. research.sim4ai.com</view>
-      <view class="reference-item" bindtap="copyUrl" data-url="https://gemini.sim4ai.com">3. gemini.sim4ai.com</view>
+      <view class="reference-item" bindtap="copyUrl" data-url="https://tv.sim4ai.com">3. tv.sim4ai.com</view>
       <view class="reference-item" bindtap="copyUrl" data-url="https://labubu.sim4ai.com">4. labubu.sim4ai.com</view>
-      <view class="reference-item" bindtap="copyUrl" data-url="https://tv.sim4ai.com">5. tv.sim4ai.com</view>
       <button class="close-btn" bindtap="hideReferences">关闭</button>
     </view>
   </view>

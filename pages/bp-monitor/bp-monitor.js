@@ -92,9 +92,11 @@ Page({
   onLoad: function (options) {
     // 初始化触摸相关变量
     this.touchTimer = null;
+    this.hideTooltipTimer = null; // New timer for hiding tooltip
     this.touchStartTime = 0;
     this.touchStartX = 0;
     this.touchStartY = 0;
+    this.isLongPressActive = false; // New state to track active long press
 
     this.setData({
       currentDate: formatDate(new Date()),
@@ -370,29 +372,49 @@ Page({
   onChartTouchStart: function (e) {
     console.log('图表触摸开始:', e);
 
+    // Reset long press active state
+    this.isLongPressActive = false;
+
+    // Clear any existing hide timer if a new touch starts
+    if (this.hideTooltipTimer) {
+      clearTimeout(this.hideTooltipTimer);
+      this.hideTooltipTimer = null;
+    }
+
     this.touchStartTime = Date.now();
     this.touchStartX = e.touches[0].clientX;
     this.touchStartY = e.touches[0].clientY;
 
-    // 设置长按定时器
+    // Set long press timer
     this.touchTimer = setTimeout(() => {
       console.log('检测到长按');
+      this.isLongPressActive = true; // Set long press active
       this.handleTouchPress(e);
-    }, 300); // 减少长按时间到300ms以提高响应性
+    }, 300); // Reduced long press time to 300ms for better responsiveness
   },
 
   onChartTouchMove: function (e) {
     console.log('图表触摸移动:', e);
 
-    // 如果手指移动超过一定距离，取消长按
-    if (this.touchTimer && e.touches[0]) {
+    if (e.touches[0]) {
       const moveX = Math.abs(e.touches[0].clientX - this.touchStartX);
       const moveY = Math.abs(e.touches[0].clientY - this.touchStartY);
 
-      if (moveX > 10 || moveY > 10) {
-        clearTimeout(this.touchTimer);
-        this.touchTimer = null;
-        console.log('手指移动过大，取消长按');
+      // If long press is not active yet and finger moves significantly, cancel long press timer
+      if (!this.isLongPressActive && (moveX > 10 || moveY > 10)) {
+        if (this.touchTimer) {
+          clearTimeout(this.touchTimer);
+          this.touchTimer = null;
+        }
+        console.log('手指移动过大，取消长按检测');
+        // If tooltip is already shown (e.g., from a previous long press that ended), hide it
+        this.hideCustomTooltip();
+        return; // Stop further processing for this move event
+      }
+
+      // If long press is active, continuously update the tooltip
+      if (this.isLongPressActive) {
+        this.handleTouchPress(e);
       }
     }
   },
@@ -400,21 +422,32 @@ Page({
   onChartTouchEnd: function (e) {
     console.log('图表触摸结束:', e);
 
-    // 清除长按定时器
+    // Store the state before resetting
+    const wasLongPressActiveBeforeEnd = this.isLongPressActive;
+
+    // Clear long press timer
     if (this.touchTimer) {
       clearTimeout(this.touchTimer);
       this.touchTimer = null;
     }
 
-    // 如果是短按（小于300ms），也触发显示提示框
+    // Reset long press active state
+    this.isLongPressActive = false;
+
+    // If it was a short press (less than 300ms) AND a long press was NOT active, trigger tooltip display once
     const touchDuration = Date.now() - this.touchStartTime;
-    if (touchDuration < 300) {
+    if (touchDuration < 300 && !wasLongPressActiveBeforeEnd) {
       console.log('检测到短按');
       this.handleTouchPress(e.changedTouches ? { touches: e.changedTouches } : e);
+    } else if (wasLongPressActiveBeforeEnd) {
+      // If it was a long press, ensure the tooltip is shown for the final position
+      // and then the hide timer will take over. No need to call handleTouchPress again.
+      console.log('长按结束，保持提示框显示并启动隐藏计时器');
     }
 
-    // 延迟隐藏提示框
-    setTimeout(() => {
+
+    // Delay hiding tooltip
+    this.hideTooltipTimer = setTimeout(() => {
       this.hideCustomTooltip();
     }, 5000); // Tooltip stays for 5 seconds
   },
@@ -422,41 +455,49 @@ Page({
   onChartTouchCancel: function (e) {
     console.log('图表触摸取消:', e);
 
-    // 清除长按定时器
+    // Clear long press timer
     if (this.touchTimer) {
       clearTimeout(this.touchTimer);
       this.touchTimer = null;
     }
+    // Clear hide tooltip timer as well
+    if (this.hideTooltipTimer) {
+      clearTimeout(this.hideTooltipTimer);
+      this.hideTooltipTimer = null;
+    }
 
-    // 隐藏提示框
+    // Reset long press active state
+    this.isLongPressActive = false;
+
+    // Hide tooltip
     this.hideCustomTooltip();
   },
 
   // 处理触摸按压事件
   handleTouchPress: function (e) {
-    console.log('处理触摸按压事件:', e);
+    // // console.log('处理触摸按压事件:', e); // Commented out for debugging
 
     if (!e.touches || e.touches.length === 0) {
-      console.log('无效的触摸事件');
+      // // console.log('无效的触摸事件'); // Commented out for debugging
       return;
     }
 
     const touch = e.touches[0];
-    console.log('触摸坐标:', { x: touch.clientX, y: touch.clientY });
+    // // console.log('触摸坐标:', { x: touch.clientX, y: touch.clientY }); // Commented out for debugging
 
     // 获取图表容器的位置信息
     const query = this.createSelectorQuery();
     query.select('#mychart-dom-line')
       .boundingClientRect()
       .exec((res) => {
-        console.log('图表容器信息:', res);
+        // // console.log('图表容器信息:', res); // Commented out for debugging
 
         if (res && res[0]) {
           const rect = res[0];
           const relativeX = touch.clientX - rect.left;
           const relativeY = touch.clientY - rect.top;
 
-          console.log('相对坐标:', { relativeX, relativeY, rect });
+          // // console.log('相对坐标:', { relativeX, relativeY, rect }); // Commented out for debugging
 
           // 转换为数据索引
           this.convertTouchToDataIndex(relativeX, relativeY, rect.width, rect.height);
@@ -468,11 +509,11 @@ Page({
 
   // 将触摸坐标转换为数据索引
   convertTouchToDataIndex: function (x, y, width, height) {
-    console.log('转换触摸坐标到数据索引:', { x, y, width, height });
+    // // console.log('转换触摸坐标到数据索引:', { x, y, width, height }); // Commented out for debugging
 
     const chartData = this.getChartData();
     if (!chartData.customBpSeriesData || chartData.customBpSeriesData.length === 0) {
-      console.log('没有图表数据');
+      // // console.log('没有图表数据'); // Commented out for debugging
       return;
     }
 
@@ -488,21 +529,21 @@ Page({
     const chartAreaY = y - topMargin;
     const chartAreaHeight = height - topMargin - bottomMargin;
 
-    console.log('图表绘制区域:', {
-      chartAreaX,
-      chartAreaY,
-      chartAreaWidth,
-      chartAreaHeight,
-      leftMargin,
-      rightMargin,
-      topMargin,
-      bottomMargin
-    });
+    // console.log('图表绘制区域:', { // Commented out for debugging
+    //   chartAreaX,
+    //   chartAreaY,
+    //   chartAreaWidth,
+    //   chartAreaHeight,
+    //   leftMargin,
+    //   rightMargin,
+    //   topMargin,
+    //   bottomMargin
+    // });
 
     // 检查触摸点是否在图表绘制区域内
     if (chartAreaX < 0 || chartAreaX > chartAreaWidth ||
       chartAreaY < 0 || chartAreaY > chartAreaHeight) {
-      console.log('触摸点不在图表绘制区域内');
+      // // console.log('触摸点不在图表绘制区域内'); // Commented out for debugging
       return;
     }
 
@@ -517,21 +558,21 @@ Page({
     // 确保索引在有效范围内
     estimatedIndex = Math.max(0, Math.min(estimatedIndex, dataLength - 1));
 
-    console.log('计算结果:', {
-      ratio,
-      estimatedIndex,
-      dataLength,
-      barInterval,
-      chartAreaX,
-      chartAreaWidth,
-      touchInChartArea: true
-    });
+    // console.log('计算结果:', { // Commented out for debugging
+    //   ratio,
+    //   estimatedIndex,
+    //   dataLength,
+    //   barInterval,
+    //   chartAreaX,
+    //   chartAreaWidth,
+    //   touchInChartArea: true
+    // });
 
     if (estimatedIndex >= 0 && estimatedIndex < dataLength) {
-      console.log('显示提示框，数据索引:', estimatedIndex);
+      // // console.log('显示提示框，数据索引:', estimatedIndex); // Commented out for debugging
       this.showCustomTooltip(estimatedIndex);
     } else {
-      console.log('数据索引超出范围');
+      // // console.log('数据索引超出范围'); // Commented out for debugging
     }
   },
 
@@ -1007,19 +1048,19 @@ Page({
 
   // 显示自定义提示框
   showCustomTooltip: function (dataIndex, seriesData) {
-    console.log('显示自定义提示框 - 数据索引:', dataIndex, '系列数据:', seriesData);
+    // console.log('显示自定义提示框 - 数据索引:', dataIndex, '系列数据:', seriesData);
 
     const { currentView } = this.data;
     const chartData = this.getChartData();
 
     if (!chartData.customBpSeriesData || dataIndex >= chartData.customBpSeriesData.length) {
-      console.log('数据索引超出范围或数据不存在');
+      // console.log('数据索引超出范围或数据不存在');
       return;
     }
 
     const dataPoint = chartData.customBpSeriesData[dataIndex];
     if (!dataPoint || !dataPoint.value || dataPoint.value.length < 3) {
-      console.log('数据点格式错误:', dataPoint);
+      // console.log('数据点格式错误:', dataPoint);
       return;
     }
 
@@ -1049,12 +1090,12 @@ Page({
       }
     });
 
-    console.log('提示框数据已设置:', this.data.tooltipData);
+    // // console.log('提示框数据已设置:', this.data.tooltipData); // Commented out for debugging
   },
 
   // 隐藏自定义提示框
   hideCustomTooltip: function () {
-    console.log('隐藏自定义提示框');
+    // // console.log('隐藏自定义提示框'); // Commented out for debugging
     this.setData({
       showCustomTooltip: false,
       tooltipData: {
@@ -1068,7 +1109,7 @@ Page({
 
   // 更新图表
   updateChart: function () {
-    console.log('开始更新图表');
+    // console.log('开始更新图表');
     this.debugChartStatus();
 
     if (!this.chart) {
@@ -1081,14 +1122,14 @@ Page({
     }
 
     const chartData = this.getChartData();
-    console.log('获取到的图表数据:', chartData);
+    // console.log('获取到的图表数据:', chartData);
 
     const option = this.getChartOption(chartData);
-    console.log('图表配置:', option);
+    // console.log('图表配置:', option);
 
     try {
       this.chart.setOption(option, true);
-      console.log('图表更新成功');
+      // console.log('图表更新成功');
 
       // 对于旧版Canvas，需要手动触发绘制
       setTimeout(() => {
@@ -1097,7 +1138,7 @@ Page({
         // 双重保险：尝试重新设置一次图表选项并强制绘制
         setTimeout(() => {
           if (this.chart) {
-            console.log('再次尝试刷新图表');
+            // console.log('再次尝试刷新图表');
             this.chart.setOption(option, true);
 
             // 尝试调用resize可能会触发重绘
@@ -1166,14 +1207,14 @@ Page({
   // 获取图表数据
   getChartData: function () {
     const { currentView, currentDate, bpRecords } = this.data;
-    console.log('获取图表数据 - 当前视图:', currentView, '当前日期:', currentDate, '总记录数:', bpRecords.length);
+    // console.log('获取图表数据 - 当前视图:', currentView, '当前日期:', currentDate, '总记录数:', bpRecords.length);
 
     let filteredRecords = [];
 
     switch (currentView) {
       case 'day':
         filteredRecords = bpRecords.filter(record => record.date === currentDate);
-        console.log('日视图过滤结果:', filteredRecords.length, '条记录');
+        // console.log('日视图过滤结果:', filteredRecords.length, '条记录');
         break;
       case 'week':
         const weekStart = new Date(currentDate);
@@ -1185,7 +1226,7 @@ Page({
           const recordDate = new Date(record.date);
           return recordDate >= weekStart && recordDate <= weekEnd;
         });
-        console.log('周视图过滤结果:', filteredRecords.length, '条记录');
+        // console.log('周视图过滤结果:', filteredRecords.length, '条记录');
         break;
       case 'month':
         const currentMonth = new Date(currentDate);
@@ -1194,7 +1235,7 @@ Page({
           return recordDate.getFullYear() === currentMonth.getFullYear() &&
             recordDate.getMonth() === currentMonth.getMonth();
         });
-        console.log('月视图过滤结果:', filteredRecords.length, '条记录');
+        // console.log('月视图过滤结果:', filteredRecords.length, '条记录');
         break;
       case 'year':
         const currentYear = new Date(currentDate).getFullYear();
@@ -1202,20 +1243,20 @@ Page({
           const recordDate = new Date(record.date);
           return recordDate.getFullYear() === currentYear;
         });
-        console.log('年视图过滤结果:', filteredRecords.length, '条记录');
+        // console.log('年视图过滤结果:', filteredRecords.length, '条记录');
         break;
     }
 
-    console.log('过滤后的记录:', filteredRecords);
+    // console.log('过滤后的记录:', filteredRecords);
     return this.processChartData(filteredRecords, currentView);
   },
 
   // 处理图表数据
   processChartData: function (records, view) {
-    console.log('处理图表数据 - 记录数:', records.length, '视图:', view);
+    // console.log('处理图表数据 - 记录数:', records.length, '视图:', view);
 
     if (records.length === 0) {
-      console.log('没有记录，返回空数据');
+      // console.log('没有记录，返回空数据');
       return { xData: [], systolicData: [], diastolicData: [], heartRateData: [], customBpSeriesData: [] };
     }
 
@@ -1249,7 +1290,7 @@ Page({
           itemStyle: { color: calculateColor(sys, dia) }
         });
       });
-      console.log('日视图数据处理完成 - X轴:', xData.length, '自定义血压数据:', customBpSeriesData.length);
+      // console.log('日视图数据处理完成 - X轴:', xData.length, '自定义血压数据:', customBpSeriesData.length);
     } else { // week, month, year views - aggregate data
       const groupedData = {};
       records.forEach(record => {
@@ -1292,10 +1333,10 @@ Page({
           itemStyle: { color: calculateColor(avgSys, avgDia) }
         });
       });
-      console.log('非日视图数据处理完成 - X轴:', xData.length, '自定义血压数据:', customBpSeriesData.length);
+      // console.log('非日视图数据处理完成 - X轴:', xData.length, '自定义血压数据:', customBpSeriesData.length);
     }
     const result = { xData, systolicData, diastolicData, heartRateData, customBpSeriesData };
-    console.log('最终处理结果:', result);
+    // console.log('最终处理结果:', result);
     return result;
   },
 

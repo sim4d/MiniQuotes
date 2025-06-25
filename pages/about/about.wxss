@@ -34,11 +34,11 @@
 }
 
 .copyright {
-  display: block;
-  margin-top: 20px;
-  text-align: center;
   font-size: 14px;
-  color: #999;
+  font-weight: bold;
+  color: #666;
+  line-height: 1.6;
+  white-space: pre-line;
 }
 
 /* 广告区域 */
