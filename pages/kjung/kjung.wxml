@@ -1,0 +1,91 @@
+<!--kjung.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">人生的后半场：荣格的智慧</text>
+    <text class="subtitle">穿越中年迷雾的六项核心启示</text>
+  </view>
+  
+  <scroll-view class="content" scroll-y="true">
+    <view class="section">
+      <view class="section-title">前言：为何是荣格？</view>
+      <view class="section-content">
+        <text class="paragraph">当我们行至人生中途，昔日的成就与光环或已黯淡，内心的空虚与迷茫却悄然滋生。卡尔·荣格，这位深刻的灵魂探索者，为我们揭示了中年并非终点，而是一场伟大的“个体化”旅程的开启。它要求我们从向外追逐转向对内探索，去发现一个更完整、更真实的自己。这份报告将为您提炼荣格思想的精髓，提供六项核心启示，助您导航人生的后半场。</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">核心六大启示</view>
+      <scroll-view class="revelations-scroll-view" scroll-y="true">
+        <view class="section-content">
+          
+          <view class="impact-item">
+            <view class="impact-title-wrapper">
+              <text class="impact-number">1</text>
+            <text class="impact-title">接纳阴影：与真实的自己和解</text>
+          </view>
+          <text class="impact-desc">“阴影”是我们不愿承认的、被压抑的人格部分。中年之旅要求我们有勇气直面并整合它。接纳不完美的自己，意味着停止内在的战争，将压抑所耗费的巨大心理能量，转化为创造与生活的动力。这并非拥抱黑暗，而是通过理解黑暗，让光明照进更深邃的角落。</text>
+        </view>
+
+        <view class="impact-item">
+          <view class="impact-title-wrapper">
+            <text class="impact-number">2</text>
+            <text class="impact-title">个体化：成为你本该成为的人</text>
+          </view>
+          <text class="impact-desc">人生的前半段，我们努力扮演社会角色——好员工、好父母、好子女。而“个体化”是撕去社会面具（人格面具），活出内在真实自我的过程。它是一条英雄之路，意味着敢于不同，敢于追寻内心的声音，最终成为一个独特而完整的个体，而非社会期望的复制品。</text>
+        </view>
+
+        <view class="impact-item">
+          <view class="impact-title-wrapper">
+            <text class="impact-number">3</text>
+            <text class="impact-title">整合阿尼玛/阿尼姆斯：内在的婚姻</text>
+          </view>
+          <text class="impact-desc">每个男人心中都潜藏着女性原型（阿尼玛），每个女人心中也潜藏着男性原型（阿尼姆斯）。中年是整合内在异性力量的绝佳时机。男性发展其感受、滋养的能力，女性发展其理性、决断的力量。这场“内在的婚姻”将带来心理的完整与成熟，让我们的关系模式与创造力达到新的高度。</text>
+        </view>
+
+        <view class="impact-item">
+          <view class="impact-title-wrapper">
+            <text class="impact-number">4</text>
+            <text class="impact-title">寻找个人神话：赋予生命以意义</text>
+          </view>
+          <text class="impact-desc">当外部世界的意义感褪去，我们需要构建属于自己的“个人神话”。这意味着去发现什么故事能让你的生命充满意义和目标。它可能关乎创造、服务、探索或传承。个人神话是我们对抗虚无的终极武器，是我们在宇宙中为自己定位的坐标系。</text>
+        </view>
+
+        <view class="impact-item">
+          <view class="impact-title-wrapper">
+            <text class="impact-number">5</text>
+            <text class="impact-title">从自我到自性：扩展意识的边界</text>
+          </view>
+          <text class="impact-desc">“自我”（Ego）是我们意识的中心，但它只是心灵版图的一小部分。更宏大的是“自性”（Self），即完整心灵的中心。中年转化的核心，就是将心理中心从“小我”转向“大我”。这意味着不再执着于个人的得失与掌控，而是将自己视为更宏大生命流的一部分，获得前所未有的智慧与平静。</text>
+        </view>
+
+        <view class="impact-item">
+          <view class="impact-title-wrapper">
+            <text class="impact-number">6</text>
+            <text class="impact-title">内倾的价值：转向内在的财富</text>
+          </view>
+          <text class="impact-desc">如果说人生的前半场是外倾的、行动导向的，那么后半场则是内倾的、反思导向的。荣格提醒我们，向内看，那里有无尽的宝藏。通过独处、反思、艺术创作，我们连接到集体无意识的智慧海洋，获得深刻的洞见与疗愈。内倾不是逃避，而是为了更有智慧地前行。</text>
+        </view>
+        
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">结语</view>
+      <view class="section-content">
+        <text class="paragraph">荣格的智慧并非一套僵硬的理论，而是一张邀请函，邀请我们勇敢地潜入自己生命的深海。人生的后半场，不是衰退，而是深化。愿这六项启示能成为您手中的地图与明灯，照亮前行的道路，最终活出一个更丰盛、更有意义的生命。</text>
+      </view>
+    </view>
+
+    <view class="section references-section">
+      <view class="section-title">参考文献</view>
+      <view class="section-content">
+        <view class="reference-item" bindtap="copyUrl" data-url="https://www.bilibili.com/video/BV1qtVfzLExr/">1. www.bilibili.com/video/BV1qtVfzLExr/</view>
+        <view class="reference-item" bindtap="copyUrl" data-url="https://gemini.sim4ai.com">2. gemini.sim4ai.com</view>
+        <view class="reference-item" bindtap="copyUrl" data-url="https://research.sim4ai.com">3. research.sim4ai.com</view>
+        <view class="reference-item" bindtap="copyUrl" data-url="https://tv.sim4ai.com">4. tv.sim4ai.com</view>
+        <view class="reference-item" bindtap="copyUrl" data-url="https://labubu.sim4ai.com">5. labubu.sim4ai.com</view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

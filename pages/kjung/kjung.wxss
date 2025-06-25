@@ -1,0 +1,168 @@
+/* pages/kjung/kjung.wxss */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.header {
+  position: relative;
+  z-index: 2;
+  padding: 40px 20px 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.title {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  display: block;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  height: calc(100vh - 120px);
+  padding: 0 20px;
+}
+
+.section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  margin: 20px 0;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #667eea;
+  display: block;
+}
+
+.section-content {
+  line-height: 1.6;
+}
+
+.revelations-scroll-view {
+  height: 350px; /* Approximate height for two items */
+  position: relative;
+}
+
+.revelations-scroll-view::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 20%, transparent);
+  pointer-events: none; /* Allow scrolling through the gradient */
+}
+
+.revelations-scroll-view .section-content {
+  /* Add padding at the bottom so the last item can scroll fully above the fade */
+  padding-bottom: 30px;
+}
+
+.paragraph {
+  display: block;
+  font-size: 14px;
+  color: #4a5568;
+  margin-bottom: 12px;
+  text-align: justify;
+}
+
+.impact-item {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: transparent;
+  border-radius: 8px;
+  border: none;
+}
+
+.impact-title-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.impact-number {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.impact-title {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: #4a5568;
+}
+
+.impact-desc {
+  display: block;
+  font-size: 15px;
+  color: #4a5568;
+  line-height: 1.7;
+  padding-left: 44px; /* Align with title */
+  text-align: justify;
+}
+
+.references-section .section-title {
+  border-bottom-color: #e2e8f0;
+}
+
+.reference-item {
+  display: block;
+  font-size: 14px;
+  color: #718096;
+  line-height: 1.8;
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.reference-item:active {
+  background-color: #e2e8f0;
+}
