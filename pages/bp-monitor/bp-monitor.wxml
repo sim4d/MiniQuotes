@@ -28,7 +28,32 @@
   <!-- 图表区域 -->
   <view class="chart-container" hidden="{{showAddDialog}}">
     <view class="chart-wrapper">
-      <ec-canvas id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="{{forceOldCanvas}}"></ec-canvas>
+      <ec-canvas id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="{{forceOldCanvas}}"
+                 bindtouchstart="onChartTouchStart"
+                 bindtouchend="onChartTouchEnd"
+                 bindtouchmove="onChartTouchMove"
+                 bindtouchcancel="onChartTouchCancel"></ec-canvas>
+    </view>
+  </view>
+
+  <!-- 自定义提示框 - 移到图表容器外 -->
+  <view class="custom-tooltip {{showCustomTooltip ? 'show' : ''}}" wx:if="{{showCustomTooltip}}" hidden="{{showAddDialog}}">
+    <view class="tooltip-content">
+      <view class="tooltip-time">{{tooltipData.timeLabel}}</view>
+      <view class="tooltip-values">
+        <view class="tooltip-item systolic">
+          <text class="tooltip-label">收缩压</text>
+          <text class="tooltip-value">{{tooltipData.systolic}}</text>
+        </view>
+        <view class="tooltip-item diastolic">
+          <text class="tooltip-label">舒张压</text>
+          <text class="tooltip-value">{{tooltipData.diastolic}}</text>
+        </view>
+        <view class="tooltip-item heart-rate">
+          <text class="tooltip-label">心率</text>
+          <text class="tooltip-value">{{tooltipData.heartRate}}</text>
+        </view>
+      </view>
     </view>
   </view>
 

@@ -78,10 +78,24 @@ Page({
       time: '',
       date: ''
     },
-    forceOldCanvas: true // 暂时强制使用旧版Canvas API来避免节点获取问题
+    forceOldCanvas: true, // 暂时强制使用旧版Canvas API来避免节点获取问题
+    // 自定义提示框相关数据
+    showCustomTooltip: false,
+    tooltipData: {
+      timeLabel: '',
+      systolic: 0,
+      diastolic: 0,
+      heartRate: 0
+    }
   },
 
   onLoad: function (options) {
+    // 初始化触摸相关变量
+    this.touchTimer = null;
+    this.touchStartTime = 0;
+    this.touchStartX = 0;
+    this.touchStartY = 0;
+
     this.setData({
       currentDate: formatDate(new Date()),
       displayDate: formatDisplayDate(new Date())
@@ -349,6 +363,175 @@ Page({
       console.error('图表初始化失败:', error);
       this.chart = null;
       return null;
+    }
+  },
+
+  // 微信小程序触摸事件处理
+  onChartTouchStart: function (e) {
+    console.log('图表触摸开始:', e);
+
+    this.touchStartTime = Date.now();
+    this.touchStartX = e.touches[0].clientX;
+    this.touchStartY = e.touches[0].clientY;
+
+    // 设置长按定时器
+    this.touchTimer = setTimeout(() => {
+      console.log('检测到长按');
+      this.handleTouchPress(e);
+    }, 300); // 减少长按时间到300ms以提高响应性
+  },
+
+  onChartTouchMove: function (e) {
+    console.log('图表触摸移动:', e);
+
+    // 如果手指移动超过一定距离，取消长按
+    if (this.touchTimer && e.touches[0]) {
+      const moveX = Math.abs(e.touches[0].clientX - this.touchStartX);
+      const moveY = Math.abs(e.touches[0].clientY - this.touchStartY);
+
+      if (moveX > 10 || moveY > 10) {
+        clearTimeout(this.touchTimer);
+        this.touchTimer = null;
+        console.log('手指移动过大，取消长按');
+      }
+    }
+  },
+
+  onChartTouchEnd: function (e) {
+    console.log('图表触摸结束:', e);
+
+    // 清除长按定时器
+    if (this.touchTimer) {
+      clearTimeout(this.touchTimer);
+      this.touchTimer = null;
+    }
+
+    // 如果是短按（小于300ms），也触发显示提示框
+    const touchDuration = Date.now() - this.touchStartTime;
+    if (touchDuration < 300) {
+      console.log('检测到短按');
+      this.handleTouchPress(e.changedTouches ? { touches: e.changedTouches } : e);
+    }
+
+    // 延迟隐藏提示框
+    setTimeout(() => {
+      this.hideCustomTooltip();
+    }, 5000); // Tooltip stays for 5 seconds
+  },
+
+  onChartTouchCancel: function (e) {
+    console.log('图表触摸取消:', e);
+
+    // 清除长按定时器
+    if (this.touchTimer) {
+      clearTimeout(this.touchTimer);
+      this.touchTimer = null;
+    }
+
+    // 隐藏提示框
+    this.hideCustomTooltip();
+  },
+
+  // 处理触摸按压事件
+  handleTouchPress: function (e) {
+    console.log('处理触摸按压事件:', e);
+
+    if (!e.touches || e.touches.length === 0) {
+      console.log('无效的触摸事件');
+      return;
+    }
+
+    const touch = e.touches[0];
+    console.log('触摸坐标:', { x: touch.clientX, y: touch.clientY });
+
+    // 获取图表容器的位置信息
+    const query = this.createSelectorQuery();
+    query.select('#mychart-dom-line')
+      .boundingClientRect()
+      .exec((res) => {
+        console.log('图表容器信息:', res);
+
+        if (res && res[0]) {
+          const rect = res[0];
+          const relativeX = touch.clientX - rect.left;
+          const relativeY = touch.clientY - rect.top;
+
+          console.log('相对坐标:', { relativeX, relativeY, rect });
+
+          // 转换为数据索引
+          this.convertTouchToDataIndex(relativeX, relativeY, rect.width, rect.height);
+        } else {
+          console.error('无法获取图表容器信息');
+        }
+      });
+  },
+
+  // 将触摸坐标转换为数据索引
+  convertTouchToDataIndex: function (x, y, width, height) {
+    console.log('转换触摸坐标到数据索引:', { x, y, width, height });
+
+    const chartData = this.getChartData();
+    if (!chartData.customBpSeriesData || chartData.customBpSeriesData.length === 0) {
+      console.log('没有图表数据');
+      return;
+    }
+
+    // 考虑图表的边距和缩放
+    // 图表实际绘制区域通常不是整个canvas，需要考虑margin
+    const leftMargin = width * 0.1; // 大约10%的左边距
+    const rightMargin = width * 0.1; // 大约10%的右边距
+    const topMargin = height * 0.2; // 大约20%的上边距（包含标题和图例）
+    const bottomMargin = height * 0.15; // 大约15%的下边距
+
+    const chartAreaX = x - leftMargin;
+    const chartAreaWidth = width - leftMargin - rightMargin;
+    const chartAreaY = y - topMargin;
+    const chartAreaHeight = height - topMargin - bottomMargin;
+
+    console.log('图表绘制区域:', {
+      chartAreaX,
+      chartAreaY,
+      chartAreaWidth,
+      chartAreaHeight,
+      leftMargin,
+      rightMargin,
+      topMargin,
+      bottomMargin
+    });
+
+    // 检查触摸点是否在图表绘制区域内
+    if (chartAreaX < 0 || chartAreaX > chartAreaWidth ||
+      chartAreaY < 0 || chartAreaY > chartAreaHeight) {
+      console.log('触摸点不在图表绘制区域内');
+      return;
+    }
+
+    // 计算数据索引 - 使用更精确的索引计算
+    const dataLength = chartData.customBpSeriesData.length;
+    const ratio = chartAreaX / chartAreaWidth;
+    
+    // 计算每个柱状图的实际宽度区间
+    const barInterval = chartAreaWidth / dataLength;
+    let estimatedIndex = Math.floor(chartAreaX / barInterval);
+    
+    // 确保索引在有效范围内
+    estimatedIndex = Math.max(0, Math.min(estimatedIndex, dataLength - 1));
+
+    console.log('计算结果:', {
+      ratio,
+      estimatedIndex,
+      dataLength,
+      barInterval,
+      chartAreaX,
+      chartAreaWidth,
+      touchInChartArea: true
+    });
+
+    if (estimatedIndex >= 0 && estimatedIndex < dataLength) {
+      console.log('显示提示框，数据索引:', estimatedIndex);
+      this.showCustomTooltip(estimatedIndex);
+    } else {
+      console.log('数据索引超出范围');
     }
   },
 
@@ -822,6 +1005,67 @@ Page({
     });
   },
 
+  // 显示自定义提示框
+  showCustomTooltip: function (dataIndex, seriesData) {
+    console.log('显示自定义提示框 - 数据索引:', dataIndex, '系列数据:', seriesData);
+
+    const { currentView } = this.data;
+    const chartData = this.getChartData();
+
+    if (!chartData.customBpSeriesData || dataIndex >= chartData.customBpSeriesData.length) {
+      console.log('数据索引超出范围或数据不存在');
+      return;
+    }
+
+    const dataPoint = chartData.customBpSeriesData[dataIndex];
+    if (!dataPoint || !dataPoint.value || dataPoint.value.length < 3) {
+      console.log('数据点格式错误:', dataPoint);
+      return;
+    }
+
+    // dataPoint.value = [xCategory, diastolic, systolic]
+    const xCategory = dataPoint.value[0];
+    const diastolic = dataPoint.value[1];
+    const systolic = dataPoint.value[2];
+    const heartRate = chartData.heartRateData[dataIndex]; // Get heart rate from the processed chart data
+
+    // 根据当前视图格式化时间标签
+    let timeLabel = '';
+    if (currentView === 'day') {
+      timeLabel = `${xCategory}`;
+    } else if (currentView === 'week' || currentView === 'month') {
+      timeLabel = `${xCategory}`;
+    } else if (currentView === 'year') {
+      timeLabel = `${xCategory}`;
+    }
+
+    this.setData({
+      showCustomTooltip: true,
+      tooltipData: {
+        timeLabel: timeLabel,
+        systolic: systolic,
+        diastolic: diastolic,
+        heartRate: heartRate // Add heart rate to tooltip data
+      }
+    });
+
+    console.log('提示框数据已设置:', this.data.tooltipData);
+  },
+
+  // 隐藏自定义提示框
+  hideCustomTooltip: function () {
+    console.log('隐藏自定义提示框');
+    this.setData({
+      showCustomTooltip: false,
+      tooltipData: {
+        timeLabel: '',
+        systolic: 0,
+        diastolic: 0,
+        heartRate: 0 // Reset heart rate
+      }
+    });
+  },
+
   // 更新图表
   updateChart: function () {
     console.log('开始更新图表');
@@ -1142,44 +1386,7 @@ Page({
         ]
       },
       tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'cross',
-          lineStyle: {
-            type: 'dashed',
-            width: 1
-          }
-        },
-        confine: true,
-        position: function (point, params, dom, rect, size) {
-          // 确保提示框始终在图表区域内
-          return [Math.min(point[0], size.viewSize[0] - dom.offsetWidth - 10), '10%'];
-        },
-        formatter: function (params) {
-          let result = params[0].name + '<br/>'; // xCategory (time or date)
-          params.forEach(function (item) {
-            const seriesName = item.seriesName;
-            if (seriesName === '血压范围') {
-              // item.value for custom series is [xCategory, diastolic, systolic]
-              if (item.value && item.value.length === 3) {
-                result += item.marker + '收缩压: ' + item.value[2] + ' mmHg<br/>';
-                result += item.marker + '舒张压: ' + item.value[1] + ' mmHg<br/>';
-              }
-            } else if (seriesName === '心率') {
-              result += item.marker + seriesName + ': ' + item.value + ' bpm<br/>';
-            } else {
-              // Fallback for other series if any, or original lines if temporarily kept
-              const unit = seriesName === '心率' ? ' bpm' : ' mmHg';
-              result += item.marker + seriesName + ': ' + item.value + unit + '<br/>';
-            }
-          });
-          return result;
-        },
-        backgroundColor: 'rgba(255,255,255,0.9)',
-        textStyle: {
-          fontSize: fontSizes.tooltip
-        },
-        padding: [5, 8]
+        show: false // 禁用默认tooltip，使用自定义tooltip
       },
       legend: {
         data: ['血压范围', '心率'], // Updated legend
@@ -1240,6 +1447,9 @@ Page({
             fontSize: fontSizes.axis,
             padding: [0, 0, 0, 0]
           },
+          splitLine: {
+            show: false // 隐藏血压Y轴横线
+          },
           splitNumber: 12,
           scale: true,
           boundaryGap: ['5%', '5%'],
@@ -1267,6 +1477,9 @@ Page({
           nameTextStyle: {
             fontSize: fontSizes.axis,
             padding: [0, 0, 0, 0]
+          },
+          splitLine: {
+            show: false // 隐藏心率Y轴横线
           },
           splitNumber: 12,
           scale: true,
