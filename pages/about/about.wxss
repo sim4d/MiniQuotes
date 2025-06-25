@@ -33,6 +33,14 @@
   white-space: pre-line;
 }
 
+.copyright {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #999;
+}
+
 /* 广告区域 */
 .ad-section {
   height: 120px;
@@ -74,4 +82,59 @@
   border-radius: 8px;
   color: #999;
   font-size: 14px;
+}
+
+/* 弹窗样式 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 400px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  padding: 20px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.reference-item {
+  display: block;
+  font-size: 14px;
+  color: #337ab7;
+  line-height: 1.8;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.reference-item:active {
+  background-color: #e2e8f0;
+}
+
+.close-btn {
+  margin-top: 20px;
+  background-color: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
 }

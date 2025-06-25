@@ -5,7 +5,8 @@ Page({
     data: {
         adLoaded: false,
         adImage: '/images/ad-placeholder.png',
-        lastTapTime: 0 // 记录上次点击时间
+        lastTapTime: 0, // 记录上次点击时间
+        showModal: false
     },
 
     /**
@@ -101,5 +102,36 @@ Page({
             icon: 'none'
         });
         // 实际项目中这里应该是广告跳转逻辑
+    },
+
+    /**
+     * 显示参考文献弹窗
+     */
+    showReferences: function() {
+      this.setData({ showModal: true });
+    },
+
+    /**
+     * 隐藏参考文献弹窗
+     */
+    hideReferences: function() {
+      this.setData({ showModal: false });
+    },
+
+    /**
+     * 复制链接到剪贴板
+     */
+    copyUrl: function (e) {
+      const url = e.currentTarget.dataset.url;
+      wx.setClipboardData({
+        data: url,
+        success: function () {
+          wx.showToast({
+            title: '链接已复制',
+            icon: 'success',
+            duration: 2000
+          });
+        }
+      });
     }
 })
