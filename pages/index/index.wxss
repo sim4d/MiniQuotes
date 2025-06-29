@@ -40,12 +40,18 @@
   width: 100%;
 }
 
+.solaris-button-wrapper {
+  grid-column: 3 / 4;
+  grid-row: 3 / 4;
+  width: 100%;
+}
+
 .empty-space {
   width: 100%;
   height: 0;
 }
 
-tetris-button, quotes-button, bp-button, superjog-button, kjung-button {
+tetris-button, quotes-button, bp-button, superjog-button, kjung-button, solaris-button {
   margin: 0 auto;
   display: block;
 }

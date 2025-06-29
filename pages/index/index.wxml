@@ -19,5 +19,7 @@
     <kjung-button bindtap="navigateToKJung"></kjung-button>
   </view>
   <view class="empty-space"></view>
-  <view class="empty-space"></view>
+  <view class="solaris-button-wrapper">
+    <solaris-button bindtap="navigateToSolaris"></solaris-button>
+  </view>
 </view>

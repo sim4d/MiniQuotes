@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "3D太阳系",
+  "navigationBarTextStyle": "white",
+  "navigationBarBackgroundColor": "#000000",
+  "backgroundColor": "#000000",
+  "backgroundTextStyle": "light",
+  "enablePullDownRefresh": false,
+  "usingComponents": {},
+  "disableScroll": true,
+  "disableScroll": true
+}

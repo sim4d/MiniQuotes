@@ -7,6 +7,7 @@
         "tetris-button": "/components/tetris-button/tetris-button",
         "bp-button": "/components/bp-button/bp-button",
         "superjog-button": "/components/superjog-button/superjog-button",
-        "kjung-button": "/components/kjung-button/kjung-button"
+        "kjung-button": "/components/kjung-button/kjung-button",
+        "solaris-button": "/components/solaris-button/solaris-button"
     }
 }

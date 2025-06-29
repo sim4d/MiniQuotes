@@ -53,5 +53,12 @@ Page({
         wx.navigateTo({
             url: '../kjung/kjung'
         })
+    },
+
+    // 导航到Solaris页面
+    navigateToSolaris: function () {
+        wx.navigateTo({
+            url: '../solaris/solaris'
+        })
     }
 })

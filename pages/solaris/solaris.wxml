@@ -1,0 +1,16 @@
+<!--solaris.wxml-->
+<view class="container">
+  <canvas
+    type="webgl"
+    id="solaris-canvas"
+    class="canvas"
+    style="width: 100%; height: 100%;">
+  </canvas>
+  <canvas
+    type="2d"
+    id="solaris-canvas-2d"
+    class="canvas canvas-2d"
+    style="width: 100%; height: 100%;">
+  </canvas>
+  <view class="debug-info" wx:if="{{debugInfo}}">{{debugInfo}}</view>
+</view>

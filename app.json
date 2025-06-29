@@ -36,5 +36,17 @@
     "audio"
   ],
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "useExtendedLib": {
+    "weui": true
+  },
+  "subpackages": [
+    {
+      "root": "pages/solaris",
+      "pages": [
+        "solaris"
+      ],
+      "independent": false
+    }
+  ]
 }
