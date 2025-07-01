@@ -673,18 +673,20 @@ Page({
     // 只有太阳在屏幕内才绘制
     if (this.sun2d.x + this.sun2d.radius > 0 && 
         this.sun2d.x - this.sun2d.radius < this.canvas2d.width) {
-      // 绘制太阳光晕（太阳在最前面）
-      const gradient = ctx.createRadialGradient(
-        this.sun2d.x, this.sun2d.y, this.sun2d.radius,
-        this.sun2d.x, this.sun2d.y, this.sun2d.glowRadius
-      );
-      gradient.addColorStop(0, this.sun2d.glowColor);
-      gradient.addColorStop(1, 'rgba(255, 204, 51, 0)');
       
-      ctx.beginPath();
-      ctx.arc(this.sun2d.x, this.sun2d.y, this.sun2d.glowRadius, 0, Math.PI * 2);
-      ctx.fillStyle = gradient;
-      ctx.fill();
+      // 改用多层圆形替代径向渐变，避免使用createRadialGradient
+      // 绘制太阳光晕（太阳在最前面）
+      const glowLayers = 5; // 光晕层数
+      for (let i = glowLayers; i > 0; i--) {
+        const ratio = i / glowLayers;
+        const glowRadius = this.sun2d.radius + (this.sun2d.glowRadius - this.sun2d.radius) * ratio;
+        const alpha = 0.3 * (1 - ratio); // 从内到外透明度逐渐降低
+        
+        ctx.beginPath();
+        ctx.arc(this.sun2d.x, this.sun2d.y, glowRadius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 204, 51, ${alpha})`;
+        ctx.fill();
+      }
       
       // 绘制太阳
       ctx.beginPath();

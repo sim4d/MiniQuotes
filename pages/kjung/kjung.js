@@ -61,7 +61,10 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-
+    return {
+      title: '个体化：中年人的再次成长',
+      path: '/pages/kjung/kjung'
+    }
   },
 
   /**

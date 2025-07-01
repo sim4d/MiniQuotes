@@ -1,90 +1,148 @@
 <!--kjung.wxml-->
 <view class="container">
+  <!-- Header -->
   <view class="header">
-    <text class="title">人生的后半场：荣格的智慧</text>
-    <text class="subtitle">穿越中年迷雾的六项核心启示</text>
+    <text class="title">个体化：中年人的再次成长</text>
+    <text class="subtitle">荣格论人生的下半场</text>
   </view>
-  
+
   <scroll-view class="content" scroll-y="true">
+    <!-- Section 1: The Crossroads of Midlife -->
     <view class="section">
-      <view class="section-title">前言：为何是荣格？</view>
-      <view class="section-content">
-        <text class="paragraph">当我们行至人生中途，昔日的成就与光环或已黯淡，内心的空虚与迷茫却悄然滋生。卡尔·荣格，这位深刻的灵魂探索者，为我们揭示了中年并非终点，而是一场伟大的“个体化”旅程的开启。它要求我们从向外追逐转向对内探索，去发现一个更完整、更真实的自己。这份报告将为您提炼荣格思想的精髓，提供六项核心启示，助您导航人生的后半场。</text>
+      <view class="section-title">中年之路的十字路口：当"人格面具"开始破裂</view>
+      <view class="section-content card-light">
+        <text class="paragraph">
+          人到中年，许多人会来到一个十字路口。我们可能拥有了稳定的事业、家庭，完成了社会期望的种种任务，但内心深处却升起一种无法忽视的空虚感。曾经热爱的工作变得乏味，家庭的责任让人感到窒息，生活仿佛卡住了，不上不下。
+        </text>
+        <view class="tags-container">
+          <view class="tag tag-amber">职业瓶颈</view>
+          <view class="tag tag-sky">家庭责任</view>
+          <view class="tag tag-rose">意义危机</view>
+        </view>
+        <text class="paragraph">
+          这种感觉，是我们的"人格面具"（Persona）——那个为了适应外界而精心打造的、能干且得体的形象——开始变得沉重和破裂的信号。我们长期压抑着真实的自己，去扮演一个"好员工"、"好伴侣"、"好父母"的角色。
+        </text>
+        <text class="paragraph divider">
+          荣格认为，这场危机并非失败，而是一场必要的、健康的"个体化"召唤。它提醒我们，人生的上半场任务已经完成，现在是时候停止向外寻求认可，勇敢地转向内在，去认识那个面具之下、更真实的自己，开启一场为自己而活的再次成长。
+        </text>
       </view>
     </view>
 
+    <!-- Section 2: Habitual Projection -->
     <view class="section">
-      <view class="section-title">核心六大启示</view>
-      <scroll-view class="revelations-scroll-view" scroll-y="true">
-        <view class="section-content">
-          
-          <view class="impact-item">
-            <view class="impact-title-wrapper">
-              <text class="impact-number">1</text>
-            <text class="impact-title">接纳阴影：与真实的自己和解</text>
+      <view class="section-title">问题的根源：习惯性投射</view>
+      <view class="section-content card-light">
+        <text class="paragraph text-center">这种向外寻求的模式，根植于我们未曾完成的成长。我们会习惯性地将"理想人格"的形象投射到外界权威上，以此寻求安全感。</text>
+        <view class="projection-container">
+          <!-- Childhood Projection -->
+          <view class="projection-item">
+            <view class="emoji">🧒</view>
+            <view class="arrow">↓</view>
+            <view class="emoji">👨‍👩‍👧</view>
+            <view class="label">童年时期</view>
+            <view class="sublabel">投射给父母/大人</view>
           </view>
-          <text class="impact-desc">“阴影”是我们不愿承认的、被压抑的人格部分。中年之旅要求我们有勇气直面并整合它。接纳不完美的自己，意味着停止内在的战争，将压抑所耗费的巨大心理能量，转化为创造与生活的动力。这并非拥抱黑暗，而是通过理解黑暗，让光明照进更深邃的角落。</text>
-        </view>
-
-        <view class="impact-item">
-          <view class="impact-title-wrapper">
-            <text class="impact-number">2</text>
-            <text class="impact-title">个体化：成为你本该成为的人</text>
+          <!-- Arrow -->
+          <view class="arrow-container">
+            <view class="arrow-horizontal">→</view>
           </view>
-          <text class="impact-desc">人生的前半段，我们努力扮演社会角色——好员工、好父母、好子女。而“个体化”是撕去社会面具（人格面具），活出内在真实自我的过程。它是一条英雄之路，意味着敢于不同，敢于追寻内心的声音，最终成为一个独特而完整的个体，而非社会期望的复制品。</text>
-        </view>
-
-        <view class="impact-item">
-          <view class="impact-title-wrapper">
-            <text class="impact-number">3</text>
-            <text class="impact-title">整合阿尼玛/阿尼姆斯：内在的婚姻</text>
+          <!-- Adulthood Projection -->
+          <view class="projection-item">
+            <view class="emoji">🧑‍💼</view>
+            <view class="arrow">↓</view>
+            <view class="emoji">🌟</view>
+            <view class="label">青年/成年时期</view>
+            <view class="sublabel">投射给时代精英/权威</view>
           </view>
-          <text class="impact-desc">每个男人心中都潜藏着女性原型（阿尼玛），每个女人心中也潜藏着男性原型（阿尼姆斯）。中年是整合内在异性力量的绝佳时机。男性发展其感受、滋养的能力，女性发展其理性、决断的力量。这场“内在的婚姻”将带来心理的完整与成熟，让我们的关系模式与创造力达到新的高度。</text>
         </view>
-
-        <view class="impact-item">
-          <view class="impact-title-wrapper">
-            <text class="impact-number">4</text>
-            <text class="impact-title">寻找个人神话：赋予生命以意义</text>
-          </view>
-          <text class="impact-desc">当外部世界的意义感褪去，我们需要构建属于自己的“个人神话”。这意味着去发现什么故事能让你的生命充满意义和目标。它可能关乎创造、服务、探索或传承。个人神话是我们对抗虚无的终极武器，是我们在宇宙中为自己定位的坐标系。</text>
-        </view>
-
-        <view class="impact-item">
-          <view class="impact-title-wrapper">
-            <text class="impact-number">5</text>
-            <text class="impact-title">从自我到自性：扩展意识的边界</text>
-          </view>
-          <text class="impact-desc">“自我”（Ego）是我们意识的中心，但它只是心灵版图的一小部分。更宏大的是“自性”（Self），即完整心灵的中心。中年转化的核心，就是将心理中心从“小我”转向“大我”。这意味着不再执着于个人的得失与掌控，而是将自己视为更宏大生命流的一部分，获得前所未有的智慧与平静。</text>
-        </view>
-
-        <view class="impact-item">
-          <view class="impact-title-wrapper">
-            <text class="impact-number">6</text>
-            <text class="impact-title">内倾的价值：转向内在的财富</text>
-          </view>
-          <text class="impact-desc">如果说人生的前半场是外倾的、行动导向的，那么后半场则是内倾的、反思导向的。荣格提醒我们，向内看，那里有无尽的宝藏。通过独处、反思、艺术创作，我们连接到集体无意识的智慧海洋，获得深刻的洞见与疗愈。内倾不是逃避，而是为了更有智慧地前行。</text>
-        </view>
-        
-        </view>
-      </scroll-view>
+        <text class="paragraph text-center divider">
+          这种投射让我们放弃了为自己负责，转而期待一个完美的外部权威来拯救自己。当这个"权威"让我们失望时，我们便会感到幻灭和愤怒。
+        </text>
+      </view>
     </view>
 
+    <!-- Section 3: The Practice of Individuation -->
+    <view class="section">
+      <view class="section-title">个体化的实践：再次成长的三大支柱</view>
+      
+      <!-- Pillar 1: Turning Inward -->
+      <view class="section-content card-light pillar">
+        <view class="pillar-header">
+          <view class="pillar-number blue">①</view>
+          <view class="pillar-title">转向内在：从觉察开始</view>
+        </view>
+        <text class="paragraph">这是个体化的第一步：停止自动驾驶，开始观察自己。当你因工作、家庭压力而感到莫名的烦躁、焦虑或疲惫时，不要立刻刷手机或投入下一个任务来麻痹自己。停下来，问问自己：</text>
+        <view class="list">
+          <text class="list-item">这个情绪背后，是什么需求没有被满足？是需要休息？还是对未来的恐惧？</text>
+          <text class="list-item">我是否在用"忙碌"来回避更深层的问题？</text>
+          <text class="list-item">承认生命的有限性，我真正想把时间和精力花在什么地方？</text>
+        </view>
+      </view>
+
+      <!-- Pillar 2: Embracing Wholeness -->
+      <view class="section-content card-light pillar">
+        <view class="pillar-header">
+          <view class="pillar-number purple">②</view>
+          <view class="pillar-title">拥抱完整：整合你的阴影</view>
+        </view>
+        <text class="paragraph">承认自己并非完美人设。你会嫉妒同事的晋升，会后悔当初的专业选择，会因为想有个人时间而对家人感到愧疚。整合阴影，不是要你放纵这些情绪，而是：</text>
+        <view class="list">
+          <text class="list-item"><text class="bold">承认它的存在：</text>对内心说，"我看到了我的嫉妒/愤怒/脆弱，它是真实的一部分。"</text>
+          <text class="list-item"><text class="bold">理解它的信息：</text>嫉妒可能指向你被压抑的渴望；愤怒可能源于你的边界被侵犯。</text>
+          <text class="list-item"><text class="bold">停止自我攻击：</text>不再因为拥有这些"负面"情绪而内耗。</text>
+        </view>
+      </view>
+
+      <!-- Pillar 3: Creating Meaning -->
+      <view class="section-content card-light pillar">
+        <view class="pillar-header">
+          <view class="pillar-number teal">③</view>
+          <view class="pillar-title">创造意义：负责任地生活</view>
+        </view>
+        <text class="paragraph">这是将内在觉察转化为外在行动，主动为自己的生命掌舵。</text>
+        <view class="subsections">
+          <view class="subsection">
+            <text class="subsection-title">a. 重新定义成功</text>
+            <text class="paragraph small">从追求社会时钟（升职、财富、名望），转向寻找能点燃你个人热情和意义感的事情，哪怕它很小，且不能带来直接的经济回报。</text>
+          </view>
+          <view class="subsection">
+            <text class="subsection-title">b. 滋养内在世界</text>
+            <text class="paragraph small">像安排重要会议一样，在日程表上为"无用之事"留出时间。它可以是深夜独处时写下思绪，重拾少年时的爱好，或周末独自去徒步。关键在于，做一件只为与自己相处的事。</text>
+          </view>
+          <view class="subsection">
+            <text class="subsection-title">c. 划定你的边界</text>
+            <text class="paragraph small">这是对"夹心层"中年人最实际的要求。学会对消耗你的人和事说"不"，停止将自己的不快乐归咎于他人，主动为创造自己的幸福采取行动。</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Conclusion -->
     <view class="section">
       <view class="section-title">结语</view>
-      <view class="section-content">
-        <text class="paragraph">荣格的智慧并非一套僵硬的理论，而是一张邀请函，邀请我们勇敢地潜入自己生命的深海。人生的后半场，不是衰退，而是深化。愿这六项启示能成为您手中的地图与明灯，照亮前行的道路，最终活出一个更丰盛、更有意义的生命。</text>
+      <view class="section-content card-light">
+        <text class="paragraph">
+          个体化的旅程，并非要我们成为一个完美或"更好"的人，而是成为一个更"完整"的人——一个能容纳自身光明与黑暗、力量与脆弱的真实个体。这趟旅程没有终点，它是一场持续的、与自己和解并共舞的过程。
+        </text>
+        <text class="paragraph">
+          当我们有勇气为自己的人生负起全责，我们不仅疗愈了自己，也为下一代提供了最珍贵的礼物：一个活出真实自我的榜样。这或许正是荣格那句名言的深意所在：
+        </text>
+        <view class="quote-container">
+          <text class="quote">"家庭最大的悲剧，是父母未曾活出的人生。"</text>
+          <text class="quote-author">- 卡尔·荣格</text>
+        </view>
+        <text class="ending">愿我们都能踏上这条路，活出属于自己的、独一无二的生命。</text>
       </view>
     </view>
 
+    <!-- Reference Section -->
     <view class="section references-section">
-      <view class="section-title">参考文献</view>
-      <view class="section-content">
-        <view class="reference-item" bindtap="copyUrl" data-url="https://www.bilibili.com/video/BV1qtVfzLExr/">1. www.bilibili.com/video/BV1qtVfzLExr/</view>
-        <view class="reference-item" bindtap="copyUrl" data-url="https://gemini.sim4ai.com">2. gemini.sim4ai.com</view>
-        <view class="reference-item" bindtap="copyUrl" data-url="https://research.sim4ai.com">3. research.sim4ai.com</view>
-        <view class="reference-item" bindtap="copyUrl" data-url="https://tv.sim4ai.com">4. tv.sim4ai.com</view>
-        <view class="reference-item" bindtap="copyUrl" data-url="https://labubu.sim4ai.com">5. labubu.sim4ai.com</view>
+      <view class="section-title">参考资料</view>
+      <view class="section-content card-light">
+        <view class="reference-item" bindtap="copyUrl" data-url="www.bilibili.com/video/BV1qtVfzLExr/">
+          <text class="reference-link">www.bilibili.com/video/BV1qtVfzLExr/</text>
+          <text class="reference-copy-hint">点击复制链接</text>
+        </view>
       </view>
     </view>
   </scroll-view>
