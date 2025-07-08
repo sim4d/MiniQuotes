@@ -86,7 +86,12 @@ Page({
       systolic: 0,
       diastolic: 0,
       heartRate: 0
-    }
+    },
+    // 滑动窗口相关数据
+    windowStartIndex: 0, // 当前窗口的起始索引
+    allChartData: null, // 存储所有处理后的数据
+    isSwipeEnabled: true, // 是否启用滑动
+    forceRefresh: false // iOS强制刷新标志
   },
 
   onLoad: function (options) {
@@ -97,6 +102,11 @@ Page({
     this.touchStartX = 0;
     this.touchStartY = 0;
     this.isLongPressActive = false; // New state to track active long press
+    
+    // 初始化滑动相关变量
+    this.swipeStartX = 0;
+    this.swipeThreshold = 50; // 滑动阈值（像素）
+    this.isSwipeInProgress = false;
 
     this.setData({
       currentDate: formatDate(new Date()),
@@ -341,7 +351,7 @@ Page({
       const chartData = this.getChartData();
       const option = this.getChartOption(chartData);
 
-      chart.setOption(option);
+      chart.setOption(option, true, true); // 初始化时也使用完全替换
       console.log('图表初始化时已设置数据');
 
       // 确保图表能正确响应容器尺寸变化
@@ -384,6 +394,10 @@ Page({
     this.touchStartTime = Date.now();
     this.touchStartX = e.touches[0].clientX;
     this.touchStartY = e.touches[0].clientY;
+    
+    // 记录滑动起始位置
+    this.swipeStartX = e.touches[0].clientX;
+    this.isSwipeInProgress = false;
 
     // Set long press timer
     this.touchTimer = setTimeout(() => {
@@ -394,11 +408,39 @@ Page({
   },
 
   onChartTouchMove: function (e) {
-    console.log('图表触摸移动:', e);
-
     if (e.touches[0]) {
       const moveX = Math.abs(e.touches[0].clientX - this.touchStartX);
       const moveY = Math.abs(e.touches[0].clientY - this.touchStartY);
+      const swipeDeltaX = e.touches[0].clientX - this.swipeStartX;
+
+      // 调试滑动检测
+      if (Math.abs(swipeDeltaX) > 10) {
+        console.log('滑动检测:', {
+          swipeDeltaX: swipeDeltaX,
+          moveX: moveX,
+          moveY: moveY,
+          isSwipeEnabled: this.data.isSwipeEnabled,
+          currentView: this.data.currentView,
+          hasAllChartData: !!this.data.allChartData,
+          dataLength: this.data.allChartData ? this.data.allChartData.xData.length : 0
+        });
+      }
+
+      // 检测是否为水平滑动（所有视图都启用）
+      if (Math.abs(swipeDeltaX) > 20 && // 进一步降低阈值
+          moveY < moveX / 2) {
+        this.isSwipeInProgress = true;
+        
+        // 取消长按检测
+        if (this.touchTimer) {
+          clearTimeout(this.touchTimer);
+          this.touchTimer = null;
+        }
+        
+        // 隐藏提示框
+        this.hideCustomTooltip();
+        return;
+      }
 
       // If long press is not active yet and finger moves significantly, cancel long press timer
       if (!this.isLongPressActive && (moveX > 10 || moveY > 10)) {
@@ -406,7 +448,6 @@ Page({
           clearTimeout(this.touchTimer);
           this.touchTimer = null;
         }
-        console.log('手指移动过大，取消长按检测');
         // If tooltip is already shown (e.g., from a previous long press that ended), hide it
         this.hideCustomTooltip();
         return; // Stop further processing for this move event
@@ -420,8 +461,6 @@ Page({
   },
 
   onChartTouchEnd: function (e) {
-    console.log('图表触摸结束:', e);
-
     // Store the state before resetting
     const wasLongPressActiveBeforeEnd = this.isLongPressActive;
 
@@ -434,22 +473,105 @@ Page({
     // Reset long press active state
     this.isLongPressActive = false;
 
-    // If it was a short press (less than 300ms) AND a long press was NOT active, trigger tooltip display once
-    const touchDuration = Date.now() - this.touchStartTime;
-    if (touchDuration < 300 && !wasLongPressActiveBeforeEnd) {
-      console.log('检测到短按');
-      this.handleTouchPress(e.changedTouches ? { touches: e.changedTouches } : e);
-    } else if (wasLongPressActiveBeforeEnd) {
-      // If it was a long press, ensure the tooltip is shown for the final position
-      // and then the hide timer will take over. No need to call handleTouchPress again.
-      console.log('长按结束，保持提示框显示并启动隐藏计时器');
+    // 处理滑动手势 - 使用changedTouches获取结束位置
+    const endTouch = e.changedTouches ? e.changedTouches[0] : null;
+    if (endTouch) {
+      const swipeDeltaX = endTouch.clientX - this.swipeStartX;
+      
+      // 调试滑动结束
+      console.log('触摸结束，滑动检测:', {
+        swipeDeltaX: swipeDeltaX,
+        isSwipeEnabled: this.data.isSwipeEnabled,
+        currentView: this.data.currentView,
+        hasAllChartData: !!this.data.allChartData,
+        dataLength: this.data.allChartData ? this.data.allChartData.xData.length : 0
+      });
+      
+      // 检查是否为有效的滑动手势
+      if (Math.abs(swipeDeltaX) > 20) { // 进一步降低阈值
+        console.log('检测到有效滑动手势，距离:', swipeDeltaX, '方向:', swipeDeltaX > 0 ? '右' : '左');
+        
+        // 日视图：滑动切换日期
+        if (this.data.currentView === 'day') {
+          console.log('日视图滑动，切换日期');
+          if (swipeDeltaX > 0) {
+            // 向右滑动，显示前一天
+            this.prevPeriod();
+          } else {
+            // 向左滑动，显示后一天
+            this.nextPeriod();
+          }
+          this.isSwipeInProgress = false;
+          return;
+        }
+        
+        // 周/月/年视图：滑动窗口
+        if (this.data.isSwipeEnabled) {
+          console.log('滑动窗口视图');
+          
+          // 确保有数据可以滑动
+          if (!this.data.allChartData || this.data.allChartData.xData.length === 0) {
+            console.log('尝试生成连续数据以支持滑动');
+            const chartData = this.getContinuousChartData(
+              this.data.currentView,
+              this.data.currentDate,
+              this.data.bpRecords
+            );
+            
+            if (chartData && chartData.xData && chartData.xData.length > 0) {
+              console.log('成功生成连续数据，设置并执行滑动');
+              this.setData({
+                allChartData: chartData,
+                windowStartIndex: 0
+              }, () => {
+                // 重新执行滑动
+                if (swipeDeltaX > 0) {
+                  this.slideWindow('left');
+                } else {
+                  this.slideWindow('right');
+                }
+              });
+            } else {
+              console.error('无法生成连续数据');
+              wx.showToast({
+                title: '暂无数据',
+                icon: 'none',
+                duration: 1500
+              });
+            }
+          } else {
+            // 有数据，直接执行滑动
+            if (swipeDeltaX > 0) {
+              // 向右滑动，显示之前的数据
+              console.log('向右滑动，显示之前的数据');
+              this.slideWindow('left');
+            } else {
+              // 向左滑动，显示之后的数据
+              console.log('向左滑动，显示之后的数据');
+              this.slideWindow('right');
+            }
+          }
+        }
+        
+        this.isSwipeInProgress = false;
+        return;
+      }
     }
 
+    // If it was a short press (less than 300ms) AND a long press was NOT active, trigger tooltip display once
+    const touchDuration = Date.now() - this.touchStartTime;
+    if (touchDuration < 300 && !wasLongPressActiveBeforeEnd && !this.isSwipeInProgress) {
+      this.handleTouchPress(e.changedTouches ? { touches: e.changedTouches } : e);
+    }
 
     // Delay hiding tooltip
-    this.hideTooltipTimer = setTimeout(() => {
-      this.hideCustomTooltip();
-    }, 5000); // Tooltip stays for 5 seconds
+    if (!this.isSwipeInProgress) {
+      this.hideTooltipTimer = setTimeout(() => {
+        this.hideCustomTooltip();
+      }, 5000); // Tooltip stays for 5 seconds
+    }
+    
+    this.isSwipeInProgress = false;
   },
 
   onChartTouchCancel: function (e) {
@@ -762,25 +884,92 @@ Page({
   // 切换视图
   switchView: function (e) {
     const view = e.currentTarget.dataset.view;
+    console.log('切换视图到:', view);
+    
+    // 检测是否为iOS设备
+    const systemInfo = wx.getSystemInfoSync();
+    const isIOS = systemInfo.platform === 'ios';
+    
     this.setData({
-      currentView: view
+      currentView: view,
+      windowStartIndex: 0, // 重置窗口位置
+      allChartData: null,
+      isSwipeEnabled: true // 所有视图都启用滑动
+    }, () => {
+      // 确保状态更新完成后再更新图表
+      console.log('视图切换完成，开始更新图表，iOS设备:', isIOS);
+      
+      // iOS设备需要更长的延迟
+      const delay = isIOS ? 300 : 100;
+      
+      setTimeout(() => {
+        if (this.chart) {
+          this.forceChartResize();
+        }
+        this.updateChart();
+      }, delay);
     });
-
-    // 切换视图时强制调整图表大小并更新数据
-    setTimeout(() => {
-      if (this.chart) {
-        this.forceChartResize();
-      }
-      this.updateChart();
-    }, 100);
   },
 
   // 前一天/周/月/年
   prevPeriod: function () {
+    const { currentView, allChartData, windowStartIndex } = this.data;
+    
+    console.log('prevPeriod调用，当前视图:', currentView, '有数据:', !!allChartData);
+    
+    // 如果是周/月/年视图且有数据，使用大步跳跃
+    if (currentView !== 'day' && allChartData) {
+      // 根据视图类型设置窗口大小
+      let windowSize = 7;
+      if (currentView === 'week') {
+        windowSize = 7;  // 周视图显示7天
+      } else if (currentView === 'month') {
+        windowSize = 15; // 月视图显示15天
+      } else if (currentView === 'year') {
+        windowSize = 8; // 年视图显示8个月
+      }
+      let jumpSize = windowSize; // 默认跳跃一个窗口大小
+      
+      if (currentView === 'week') {
+        jumpSize = 7; // 跳跃7天
+      } else if (currentView === 'month') {
+        jumpSize = 15; // 跳跃15天
+      } else if (currentView === 'year') {
+        jumpSize = windowSize; // 年视图：每次移动8个月
+      }
+      
+      const newStartIndex = Math.max(0, windowStartIndex - jumpSize);
+      console.log('大步跳跃，从索引', windowStartIndex, '到', newStartIndex);
+      
+      // 强制刷新窗口索引
+      this.data.windowStartIndex = -1;
+      this.setData({
+        windowStartIndex: newStartIndex
+      }, () => {
+        this.updateDisplayDateFromWindow();
+        
+        // 对于iOS设备，使用更激进的更新策略
+        const systemInfo = wx.getSystemInfoSync();
+        const isIOS = systemInfo.platform === 'ios';
+        
+        if (isIOS) {
+          setTimeout(() => {
+            this.updateChartWithWindow();
+          }, 200);
+        } else {
+          wx.nextTick(() => {
+            this.updateChartWithWindow();
+          });
+        }
+      });
+      return;
+    }
+    
+    // 日视图保持原有逻辑
     const currentDate = new Date(this.data.currentDate);
     let newDate;
 
-    switch (this.data.currentView) {
+    switch (currentView) {
       case 'day':
         newDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
         break;
@@ -797,17 +986,74 @@ Page({
 
     this.setData({
       currentDate: formatDate(newDate),
-      displayDate: formatDisplayDate(newDate)
+      displayDate: formatDisplayDate(newDate),
+      windowStartIndex: 0, // 重置窗口位置
+      allChartData: null
+    }, () => {
+      this.updateChart();
     });
-    this.updateChart();
   },
 
   // 后一天/周/月/年
   nextPeriod: function () {
+    const { currentView, allChartData, windowStartIndex } = this.data;
+    
+    console.log('nextPeriod调用，当前视图:', currentView, '有数据:', !!allChartData);
+    
+    // 如果是周/月/年视图且有数据，使用大步跳跃
+    if (currentView !== 'day' && allChartData) {
+      // 根据视图类型设置窗口大小
+      let windowSize = 7;
+      if (this.data.currentView === 'week') {
+        windowSize = 7;  // 周视图显示7天
+      } else if (this.data.currentView === 'month') {
+        windowSize = 15; // 月视图显示15天
+      } else if (this.data.currentView === 'year') {
+        windowSize = 8; // 年视图显示8个月
+      }
+      const maxStartIndex = Math.max(0, allChartData.xData.length - windowSize);
+      let jumpSize = windowSize; // 默认跳跃一个窗口大小
+      
+      if (currentView === 'week') {
+        jumpSize = 7; // 跳跃7天
+      } else if (currentView === 'month') {
+        jumpSize = 15; // 跳跃15天
+      } else if (currentView === 'year') {
+        jumpSize = windowSize; // 年视图：每次移动8个月
+      }
+      
+      const newStartIndex = Math.min(maxStartIndex, windowStartIndex + jumpSize);
+      console.log('大步跳跃，从索引', windowStartIndex, '到', newStartIndex);
+      
+      // 强制刷新窗口索引
+      this.data.windowStartIndex = -1;
+      this.setData({
+        windowStartIndex: newStartIndex
+      }, () => {
+        this.updateDisplayDateFromWindow();
+        
+        // 对于iOS设备，使用更激进的更新策略
+        const systemInfo = wx.getSystemInfoSync();
+        const isIOS = systemInfo.platform === 'ios';
+        
+        if (isIOS) {
+          setTimeout(() => {
+            this.updateChartWithWindow();
+          }, 200);
+        } else {
+          wx.nextTick(() => {
+            this.updateChartWithWindow();
+          });
+        }
+      });
+      return;
+    }
+    
+    // 日视图保持原有逻辑
     const currentDate = new Date(this.data.currentDate);
     let newDate;
 
-    switch (this.data.currentView) {
+    switch (currentView) {
       case 'day':
         newDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
         break;
@@ -824,9 +1070,12 @@ Page({
 
     this.setData({
       currentDate: formatDate(newDate),
-      displayDate: formatDisplayDate(newDate)
+      displayDate: formatDisplayDate(newDate),
+      windowStartIndex: 0, // 重置窗口位置
+      allChartData: null
+    }, () => {
+      this.updateChart();
     });
-    this.updateChart();
   },
 
   // 返回今天
@@ -834,7 +1083,9 @@ Page({
     const today = new Date();
     this.setData({
       currentDate: formatDate(today),
-      displayDate: formatDisplayDate(today)
+      displayDate: formatDisplayDate(today),
+      windowStartIndex: 0, // 重置窗口位置
+      allChartData: null // 清空窗口数据，强制重新生成
     });
     this.updateChart();
     wx.showToast({
@@ -1050,15 +1301,32 @@ Page({
   showCustomTooltip: function (dataIndex, seriesData) {
     // console.log('显示自定义提示框 - 数据索引:', dataIndex, '系列数据:', seriesData);
 
-    const { currentView } = this.data;
-    const chartData = this.getChartData();
+    const { currentView, allChartData, windowStartIndex } = this.data;
+    
+    // 根据是否使用滑动窗口选择数据源
+    let chartData;
+    let realDataIndex = dataIndex;
+    
+    if (currentView !== 'day' && allChartData) {
+      // 对于周/月/年视图，使用全部数据并调整索引
+      chartData = allChartData;
+      realDataIndex = windowStartIndex + dataIndex;
+      
+      // 确保索引在有效范围内
+      if (realDataIndex >= chartData.customBpSeriesData.length) {
+        return;
+      }
+    } else {
+      // 日视图直接使用当前数据
+      chartData = this.getChartData();
+    }
 
-    if (!chartData.customBpSeriesData || dataIndex >= chartData.customBpSeriesData.length) {
+    if (!chartData.customBpSeriesData || realDataIndex >= chartData.customBpSeriesData.length) {
       // console.log('数据索引超出范围或数据不存在');
       return;
     }
 
-    const dataPoint = chartData.customBpSeriesData[dataIndex];
+    const dataPoint = chartData.customBpSeriesData[realDataIndex];
     if (!dataPoint || !dataPoint.value || dataPoint.value.length < 3) {
       // console.log('数据点格式错误:', dataPoint);
       return;
@@ -1068,7 +1336,13 @@ Page({
     const xCategory = dataPoint.value[0];
     const diastolic = dataPoint.value[1];
     const systolic = dataPoint.value[2];
-    const heartRate = chartData.heartRateData[dataIndex]; // Get heart rate from the processed chart data
+    const heartRate = chartData.heartRateData[realDataIndex]; // Get heart rate from the processed chart data
+    
+    // 如果血压数据全部为null，不显示提示框
+    if (diastolic === null && systolic === null && heartRate === null) {
+      console.log('数据为空，不显示提示框');
+      return;
+    }
 
     // 根据当前视图格式化时间标签
     let timeLabel = '';
@@ -1107,9 +1381,323 @@ Page({
     });
   },
 
+  // 滑动窗口
+  slideWindow: function (direction) {
+    const { windowStartIndex, allChartData, currentView } = this.data;
+    
+    // 根据视图类型设置窗口大小
+    let windowSize = 7;
+    if (this.data.currentView === 'week') {
+      windowSize = 7;  // 周视图显示7天
+    } else if (this.data.currentView === 'month') {
+      windowSize = 15; // 月视图显示15天
+    } else if (this.data.currentView === 'year') {
+      windowSize = 8;  // 年视图显示8个月
+    }
+    
+    console.log('slideWindow调用，方向:', direction, '当前索引:', windowStartIndex);
+    
+    if (!allChartData || !allChartData.xData || allChartData.xData.length === 0) {
+      console.log('没有可用的图表数据，尝试重新生成');
+      
+      // 如果没有数据，尝试重新生成连续数据
+      const chartData = this.getContinuousChartData(currentView, this.data.currentDate, this.data.bpRecords);
+      if (chartData && chartData.xData && chartData.xData.length > 0) {
+        console.log('成功生成连续数据，长度:', chartData.xData.length);
+        this.setData({
+          allChartData: chartData
+        }, () => {
+          // 重新调用slideWindow
+          this.slideWindow(direction);
+        });
+      } else {
+        console.error('无法生成连续数据');
+        wx.showToast({
+          title: '暂无数据',
+          icon: 'none',
+          duration: 1500
+        });
+      }
+      return;
+    }
+    
+    console.log('数据详情:', {
+      总长度: allChartData.xData.length,
+      当前窗口: `${windowStartIndex} - ${windowStartIndex + windowSize}`,
+      有效数据点数: allChartData.systolicData.filter(d => d !== null).length,
+      前5个数据: allChartData.xData.slice(0, 5).join(', ')
+    });
+    
+    const maxStartIndex = Math.max(0, allChartData.xData.length - windowSize);
+    let newStartIndex = windowStartIndex;
+    
+    // 根据视图类型设置跳跃大小 - 滑动手势使用较小的步长
+    let jumpSize = 1; // 默认值
+    
+    if (currentView === 'week') {
+      jumpSize = windowSize; // 周视图：滑动一次移动7天，跟点击向左/向右一致
+    } else if (currentView === 'month') {
+      jumpSize = Math.round(windowSize / 2); // 月视图：窗口大小的一半 = 8天
+    } else if (currentView === 'year') {
+      jumpSize = windowSize; // 年视图：每次移动8个月，跟点击向左/向右一致
+    }
+    
+    if (direction === 'left') {
+      newStartIndex = Math.max(0, windowStartIndex - jumpSize);
+    } else if (direction === 'right') {
+      newStartIndex = Math.min(maxStartIndex, windowStartIndex + jumpSize);
+    }
+    
+    console.log('滑动跳跃计算:', {
+      方向: direction,
+      当前索引: windowStartIndex,
+      跳跃大小: jumpSize,
+      新索引: newStartIndex,
+      最大索引: maxStartIndex
+    });
+    
+    console.log('计算后的新索引:', newStartIndex, '最大允许索引:', maxStartIndex);
+    
+    // 显示当前窗口的数据范围和内容
+    if (allChartData.xData.length > 0) {
+      const startLabel = allChartData.xData[newStartIndex];
+      const endLabel = allChartData.xData[Math.min(newStartIndex + windowSize - 1, allChartData.xData.length - 1)];
+      
+      // 检查新窗口中是否有数据
+      const windowData = allChartData.systolicData.slice(newStartIndex, newStartIndex + windowSize);
+      const hasDataInWindow = windowData.some(d => d !== null);
+      
+      console.log('新窗口信息:', {
+        数据范围: `${startLabel} 到 ${endLabel}`,
+        包含数据: hasDataInWindow,
+        窗口数据: windowData
+      });
+    }
+    
+    if (newStartIndex !== windowStartIndex) {
+      // 强制刷新窗口索引
+      this.data.windowStartIndex = -1;
+      this.setData({
+        windowStartIndex: newStartIndex
+      }, () => {
+        // 更新显示日期
+        this.updateDisplayDateFromWindow();
+        
+        // 对于iOS设备，使用更激进的更新策略
+        const systemInfo = wx.getSystemInfoSync();
+        const isIOS = systemInfo.platform === 'ios';
+        
+        if (isIOS) {
+          // iOS设备：立即更新并在延迟后再次更新
+          this.updateChartWithWindow();
+          setTimeout(() => {
+            this.updateChartWithWindow();
+          }, 200);
+        } else {
+          // 非iOS设备：使用wx.nextTick确保DOM更新
+          wx.nextTick(() => {
+            this.updateChartWithWindow();
+          });
+        }
+      });
+    } else {
+      console.log('已到达边界，无法继续滑动');
+      wx.showToast({
+        title: direction === 'left' ? '已到最早记录' : '已到最新记录',
+        icon: 'none',
+        duration: 1500
+      });
+    }
+  },
+
+  // 根据窗口位置更新显示日期
+  updateDisplayDateFromWindow: function () {
+    const { currentView, allChartData, windowStartIndex } = this.data;
+    
+    if (!allChartData || allChartData.xData.length === 0) {
+      return;
+    }
+    
+    // 获取窗口中间位置的日期作为显示日期
+    // 根据视图类型设置窗口大小
+    let windowSize = 7;
+    if (currentView === 'week') {
+      windowSize = 7;  // 周视图显示7天
+    } else if (currentView === 'month') {
+      windowSize = 15; // 月视图显示15天
+    } else if (currentView === 'year') {
+      windowSize = 8; // 年视图显示8个月
+    }
+    const midIndex = Math.min(windowStartIndex + Math.floor(windowSize / 2), allChartData.xData.length - 1);
+    const midLabel = allChartData.xData[midIndex];
+    
+    let displayDate = '';
+    const currentDate = new Date(this.data.currentDate);
+    
+    if (currentView === 'week' || currentView === 'month') {
+      // 从 MM-DD 格式解析日期
+      if (midLabel && midLabel.includes('-')) {
+        const [month, day] = midLabel.split('-').map(num => parseInt(num));
+        
+        // 计算年份（处理跨年的情况）
+        let year = currentDate.getFullYear();
+        
+        // 如果是12月的数据但当前是1月，说明是去年的数据
+        if (month === 12 && currentDate.getMonth() < 6) {
+          year--;
+        }
+        // 如果是1月的数据但当前是12月，说明是明年的数据
+        else if (month === 1 && currentDate.getMonth() > 6) {
+          year++;
+        }
+        
+        const midDate = new Date(year, month - 1, day);
+        displayDate = formatDisplayDate(midDate);
+      }
+    } else if (currentView === 'year') {
+      // 从 MM月 格式解析月份
+      if (midLabel && midLabel.includes('月')) {
+        const month = parseInt(midLabel.replace('月', ''));
+        
+        // 计算实际年份：年视图数据范围是24个月，从当前月往前
+        const today = new Date();
+        const dataStartDate = new Date(today);
+        dataStartDate.setMonth(today.getMonth() - 23); // 24个月前
+        dataStartDate.setDate(1);
+        
+        // 年视图按月组织数据，midIndex 对应第几个月
+        // 从起始日期开始，向前推进 midIndex 个月
+        const targetDate = new Date(dataStartDate);
+        targetDate.setMonth(targetDate.getMonth() + midIndex);
+        
+        // 使用计算出的实际年份
+        const actualYear = targetDate.getFullYear();
+        displayDate = `${actualYear}年${month}月`;
+      }
+    }
+    
+    if (displayDate) {
+      this.setData({ displayDate });
+    }
+  },
+
+  // 使用窗口更新图表
+  updateChartWithWindow: function () {
+    if (!this.chart || !this.data.allChartData) {
+      console.log('图表或数据未准备好');
+      return;
+    }
+    
+    console.log('更新窗口数据，当前窗口索引:', this.data.windowStartIndex);
+    
+    // 获取窗口数据（现在由getChartData()处理窗口逻辑）
+    const windowData = this.getChartData();
+    
+    console.log('窗口数据准备完成，X轴数据:', windowData.xData);
+    console.log('窗口数据详情:', {
+      数据长度: windowData.xData.length,
+      systolic: windowData.systolicData,
+      diastolic: windowData.diastolicData,
+      heartRate: windowData.heartRateData
+    });
+    
+    // 验证数据是否正确
+    if (!windowData.xData || windowData.xData.length === 0) {
+      console.error('窗口数据为空，无法更新图表');
+      return;
+    }
+    
+    // 清除旧数据并设置新选项
+    const option = this.getChartOption(windowData);
+    
+    // 添加时间戳确保图表识别为新数据
+    option.timestamp = Date.now();
+    
+    // iOS设备特殊处理
+    const systemInfo = wx.getSystemInfoSync();
+    const isIOS = systemInfo.platform === 'ios';
+    
+    if (isIOS) {
+      console.log('iOS设备检测到，使用完全重建策略');
+      
+      // iOS方案：完全销毁并重建图表
+      try {
+        // 1. 保存当前图表引用
+        const oldChart = this.chart;
+        
+        // 2. 清空图表引用
+        this.chart = null;
+        
+        // 3. 销毁旧图表
+        if (oldChart) {
+          oldChart.dispose();
+        }
+        
+        // 4. 重新初始化图表组件
+        const ecComponent = this.selectComponent('#mychart-dom-line');
+        if (ecComponent && ecComponent.init) {
+          console.log('重新初始化图表组件');
+          
+          // 5. 调用init重新创建图表
+          ecComponent.init((canvas, ctx) => {
+            const newChart = this.initChartComponent(canvas, ctx);
+            if (newChart) {
+              // 6. 设置新数据
+              setTimeout(() => {
+                newChart.setOption(option, true);
+                console.log('iOS图表重建完成，数据已更新');
+              }, 100);
+            }
+            return newChart;
+          });
+        } else {
+          // 备用方案：使用隐藏/显示策略
+          console.log('无法重新初始化，使用备用方案');
+          this.setData({ forceRefresh: true }, () => {
+            setTimeout(() => {
+              this.setData({ forceRefresh: false }, () => {
+                if (this.chart) {
+                  this.chart.clear();
+                  this.chart.setOption(option, true);
+                  this.forceChartResize();
+                }
+              });
+            }, 100);
+          });
+        }
+      } catch (error) {
+        console.error('iOS图表更新失败:', error);
+        // 降级到标准更新
+        if (this.chart) {
+          this.chart.clear();
+          this.chart.setOption(option, true, true); // 第三个参数true表示不合并
+        }
+      }
+    } else {
+      // 非iOS设备使用标准更新流程
+      console.log('标准更新流程，清空并重设选项');
+      
+      // 完全清空旧选项
+      this.chart.setOption({}, true, true);
+      
+      // 设置新选项
+      setTimeout(() => {
+        this.chart.setOption(option, true, true); // 不合并，完全替换
+        
+        // 强制刷新图表
+        setTimeout(() => {
+          if (this.chart) {
+            this.chart.resize();
+            this.triggerCanvasDraw();
+          }
+        }, 50);
+      }, 50);
+    }
+  },
+
   // 更新图表
   updateChart: function () {
-    // console.log('开始更新图表');
+    console.log('开始更新图表，当前视图:', this.data.currentView);
     this.debugChartStatus();
 
     if (!this.chart) {
@@ -1121,15 +1709,119 @@ Page({
       return;
     }
 
-    const chartData = this.getChartData();
-    // console.log('获取到的图表数据:', chartData);
+    // 对于周/月/年视图，先获取所有数据，然后使用窗口显示
+    if (this.data.currentView !== 'day') {
+      console.log('非日视图，准备使用滑动窗口');
+      
+      // 获取连续数据
+      const continuousData = this.getContinuousChartData(this.data.currentView, this.data.currentDate, this.data.bpRecords);
+      console.log('获取到的连续数据:', {
+        数据长度: continuousData.xData.length,
+        X轴数据: continuousData.xData.length > 10 ?
+          `${continuousData.xData.slice(0, 5).join(', ')}...${continuousData.xData.slice(-5).join(', ')}` :
+          continuousData.xData.join(', ')
+      });
+      
+      // 确保有数据可以显示
+      if (!continuousData.xData || continuousData.xData.length === 0) {
+        console.error('连续数据生成失败，没有可显示的数据');
+        wx.showToast({
+          title: '暂无数据',
+          icon: 'none',
+          duration: 1500
+        });
+        return;
+      }
+      
+      // 计算初始窗口位置
+      let initialIndex = 0;
+      // 根据视图类型设置窗口大小
+      let windowSize = 7;
+      if (this.data.currentView === 'week') {
+        windowSize = 7;  // 周视图显示7天
+      } else if (this.data.currentView === 'month') {
+        windowSize = 15; // 月视图显示15天
+      } else if (this.data.currentView === 'year') {
+        windowSize = 8; // 年视图显示8个月
+      }
+      
+      // 找到今天的位置 - 周视图和月视图应当以今天为终点，显示过去的数据
+      const today = new Date();
+      const currentView = this.data.currentView;
+      
+      if (currentView === 'week' || currentView === 'month') {
+        // 始终以今天为终点，显示过去的数据
+        const todayDateStr = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        console.log('查找今天日期:', todayDateStr);
+        
+        // 查找今天在数据中的位置（应该是数据数组的最后几个位置之一）
+        const todayIndex = continuousData.xData.findIndex(x => x === todayDateStr);
+        console.log('今天在数据中的索引:', todayIndex, '数据总长度:', continuousData.xData.length);
+        
+        if (todayIndex >= 0) {
+          // 找到了今天，以今天为终点显示过去的数据
+          if (currentView === 'week') {
+            // 周视图：显示包括今天在内的过去7天，窗口从 todayIndex-6 开始到 todayIndex 结束
+            initialIndex = Math.max(0, todayIndex - windowSize + 1);
+            console.log('周视图 - 以今天为终点显示过去7天，今天索引:', todayIndex, '初始窗口索引:', initialIndex, '显示范围:', `${initialIndex} 到 ${todayIndex}`);
+          } else if (currentView === 'month') {
+            // 月视图：显示包括今天在内的过去15天，窗口从 todayIndex-14 开始到 todayIndex 结束
+            initialIndex = Math.max(0, todayIndex - windowSize + 1);
+            console.log('月视图 - 以今天为终点显示过去15天，今天索引:', todayIndex, '初始窗口索引:', initialIndex, '显示范围:', `${initialIndex} 到 ${todayIndex}`);
+          }
+        } else {
+          // 如果找不到今天，使用数据的最后位置作为"今天"的替代
+          console.log('未找到今天日期，使用数据最后位置作为终点');
+          const lastIndex = continuousData.xData.length - 1;
+          
+          if (currentView === 'week') {
+            // 周视图：以最后位置为终点，显示过去7天
+            initialIndex = Math.max(0, lastIndex - windowSize + 1);
+          } else if (currentView === 'month') {
+            // 月视图：以最后位置为终点，显示过去15天
+            initialIndex = Math.max(0, lastIndex - windowSize + 1);
+          }
+          console.log('数据最后位置索引:', lastIndex, '初始窗口索引:', initialIndex, '显示范围:', `${initialIndex} 到 ${lastIndex}`);
+        }
+      } else if (currentView === 'year') {
+        // 年视图：以当前月为终点，显示过去8个月
+        // 数据数组是从24个月前到当前月排序的，当前月是最后一个元素
+        const lastIndex = continuousData.xData.length - 1;
+        initialIndex = Math.max(0, lastIndex - windowSize + 1);
+        console.log('年视图 - 以当前月为终点显示过去8个月，数据总长度:', continuousData.xData.length, '最后索引:', lastIndex, '初始窗口索引:', initialIndex, '显示范围:', `${initialIndex} 到 ${lastIndex}`);
+      }
+      
+      console.log('最终初始窗口索引:', initialIndex, '数据总长度:', continuousData.xData.length);
+      
+      this.setData({
+        allChartData: continuousData,
+        windowStartIndex: initialIndex,
+        isSwipeEnabled: true
+      }, () => {
+        // 确保数据设置完成后再更新窗口
+        console.log('数据已存储，开始更新窗口显示');
+        this.updateDisplayDateFromWindow();
+        this.updateChartWithWindow();
+      });
+      return;
+    }
+    
+    // 日视图直接显示所有数据，但保持滑动启用以支持日期切换
+    this.setData({
+      allChartData: null,
+      windowStartIndex: 0,
+      isSwipeEnabled: true
+    });
 
+    // 获取日视图的数据
+    const chartData = this.getChartData();
     const option = this.getChartOption(chartData);
     // console.log('图表配置:', option);
 
     try {
-      this.chart.setOption(option, true);
-      // console.log('图表更新成功');
+      // 使用完全替换模式更新图表
+      this.chart.setOption(option, true, true); // 第三个参数true表示不合并
+      console.log('图表更新成功，使用完全替换模式');
 
       // 对于旧版Canvas，需要手动触发绘制
       setTimeout(() => {
@@ -1138,8 +1830,8 @@ Page({
         // 双重保险：尝试重新设置一次图表选项并强制绘制
         setTimeout(() => {
           if (this.chart) {
-            // console.log('再次尝试刷新图表');
-            this.chart.setOption(option, true);
+            console.log('再次尝试刷新图表');
+            this.chart.setOption(option, true, true); // 不合并
 
             // 尝试调用resize可能会触发重绘
             try {
@@ -1206,49 +1898,295 @@ Page({
 
   // 获取图表数据
   getChartData: function () {
-    const { currentView, currentDate, bpRecords } = this.data;
-    // console.log('获取图表数据 - 当前视图:', currentView, '当前日期:', currentDate, '总记录数:', bpRecords.length);
+    const { currentView, currentDate, bpRecords, allChartData, windowStartIndex } = this.data;
+    console.log('获取图表数据 - 当前视图:', currentView, '当前日期:', currentDate, '总记录数:', bpRecords.length);
 
-    let filteredRecords = [];
-
-    switch (currentView) {
-      case 'day':
-        filteredRecords = bpRecords.filter(record => record.date === currentDate);
-        // console.log('日视图过滤结果:', filteredRecords.length, '条记录');
-        break;
-      case 'week':
-        const weekStart = new Date(currentDate);
-        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekEnd.getDate() + 6);
-
-        filteredRecords = bpRecords.filter(record => {
-          const recordDate = new Date(record.date);
-          return recordDate >= weekStart && recordDate <= weekEnd;
+    // 对于周/月/年视图，如果有窗口数据，返回窗口数据
+    if (currentView !== 'day' && allChartData && typeof windowStartIndex === 'number') {
+      console.log('使用窗口数据 - 当前窗口索引:', windowStartIndex);
+      
+      // 根据视图类型设置窗口大小
+      let windowSize = 7;
+      if (currentView === 'week') {
+        windowSize = 7;  // 周视图显示7天
+      } else if (currentView === 'month') {
+        windowSize = 15; // 月视图显示15天
+      } else if (currentView === 'year') {
+        windowSize = 8; // 年视图显示8个月
+      }
+      
+      const endIndex = Math.min(windowStartIndex + windowSize, allChartData.xData.length);
+      
+      // 创建窗口数据
+      const windowData = {
+        xData: allChartData.xData.slice(windowStartIndex, endIndex),
+        systolicData: allChartData.systolicData.slice(windowStartIndex, endIndex),
+        diastolicData: allChartData.diastolicData.slice(windowStartIndex, endIndex),
+        heartRateData: allChartData.heartRateData.slice(windowStartIndex, endIndex),
+        customBpSeriesData: allChartData.customBpSeriesData.slice(windowStartIndex, endIndex)
+      };
+      
+      // 如果数据不足窗口大小，补充空位
+      while (windowData.xData.length < windowSize) {
+        windowData.xData.push('');
+        windowData.systolicData.push(null);
+        windowData.diastolicData.push(null);
+        windowData.heartRateData.push(null);
+        windowData.customBpSeriesData.push({
+          value: ['', null, null],
+          itemStyle: { color: 'transparent' }
         });
-        // console.log('周视图过滤结果:', filteredRecords.length, '条记录');
-        break;
-      case 'month':
-        const currentMonth = new Date(currentDate);
-        filteredRecords = bpRecords.filter(record => {
-          const recordDate = new Date(record.date);
-          return recordDate.getFullYear() === currentMonth.getFullYear() &&
-            recordDate.getMonth() === currentMonth.getMonth();
-        });
-        // console.log('月视图过滤结果:', filteredRecords.length, '条记录');
-        break;
-      case 'year':
-        const currentYear = new Date(currentDate).getFullYear();
-        filteredRecords = bpRecords.filter(record => {
-          const recordDate = new Date(record.date);
-          return recordDate.getFullYear() === currentYear;
-        });
-        // console.log('年视图过滤结果:', filteredRecords.length, '条记录');
-        break;
+      }
+      
+      console.log('返回窗口数据:', {
+        视图: currentView,
+        窗口大小: windowSize,
+        数据长度: windowData.xData.length,
+        X轴数据: windowData.xData.join(', ')
+      });
+      
+      return windowData;
+    }
+    
+    // 对于周/月/年视图，如果没有窗口数据，获取连续的日期范围数据
+    if (currentView !== 'day') {
+      const continuousData = this.getContinuousChartData(currentView, currentDate, bpRecords);
+      console.log('生成的连续数据:', {
+        视图: currentView,
+        数据长度: continuousData.xData.length,
+        有效数据点: continuousData.systolicData.filter(v => v !== null).length,
+        数据范围: continuousData.xData.length > 0 ?
+          `${continuousData.xData[0]} 到 ${continuousData.xData[continuousData.xData.length - 1]}` :
+          '无数据'
+      });
+      return continuousData;
     }
 
-    // console.log('过滤后的记录:', filteredRecords);
+    // 日视图保持原有逻辑
+    let filteredRecords = bpRecords.filter(record => record.date === currentDate);
+    console.log('日视图过滤结果:', filteredRecords.length, '条记录');
     return this.processChartData(filteredRecords, currentView);
+  },
+
+  // 获取连续的图表数据（支持滑动）
+  getContinuousChartData: function(view, centerDate, allRecords) {
+    console.log('获取连续数据，视图:', view, '中心日期:', centerDate, '总记录数:', allRecords.length);
+    
+    // 确定数据范围
+    let startDate, endDate;
+    const center = new Date(centerDate);
+    const today = new Date();
+    
+    // 确保今天是数据的终点
+    today.setHours(23, 59, 59, 999); // 设置为今天的最后一刻
+    
+    if (view === 'week') {
+      // 周视图：180天的数据范围（今天往前180天到今天）
+      endDate = new Date(today);
+      startDate = new Date(today);
+      startDate.setDate(today.getDate() - 179); // 包含今天，所以是179天前
+    } else if (view === 'month') {
+      // 月视图：365天的数据范围（今天往前365天到今天）
+      endDate = new Date(today);
+      startDate = new Date(today);
+      startDate.setDate(today.getDate() - 364); // 包含今天，所以是364天前
+    } else if (view === 'year') {
+      // 年视图：24个月的数据范围（当前月往前24个月到当前月）
+      endDate = new Date(today);
+      startDate = new Date(today);
+      startDate.setMonth(today.getMonth() - 23); // 包含当前月，所以是23个月前
+      startDate.setDate(1); // 设置为每月第一天
+    }
+    
+    console.log('数据范围:', formatDate(startDate), '到', formatDate(endDate));
+    console.log('时间跨度天数:', Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1);
+    
+    // 创建日期到数据的映射
+    const dataMap = {};
+    let recordsInRange = 0;
+    allRecords.forEach(record => {
+      const date = new Date(record.date);
+      if (date >= startDate && date <= endDate) {
+        recordsInRange++;
+        let key;
+        if (view === 'week' || view === 'month') {
+          key = record.date; // YYYY-MM-DD
+        } else { // year
+          key = record.date.substring(0, 7); // YYYY-MM
+        }
+        
+        if (!dataMap[key]) {
+          dataMap[key] = [];
+        }
+        dataMap[key].push(record);
+      }
+    });
+    
+    console.log('数据映射完成:', {
+      范围内记录数: recordsInRange,
+      有数据的日期数: Object.keys(dataMap).length,
+      数据分布: Object.keys(dataMap).slice(0, 5).join(', ') + (Object.keys(dataMap).length > 5 ? '...' : '')
+    });
+    
+    // 生成连续的日期序列
+    const continuousData = [];
+    let dataPointsWithData = 0;
+    let debugSampleData = [];
+    
+    if (view === 'week' || view === 'month') {
+      // 日视图逻辑：按天生成数据
+      const current = new Date(startDate);
+      while (current <= endDate) {
+        const key = formatDate(current);
+        const displayKey = `${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
+        
+        // 添加数据点（如果有数据）或空数据点
+        if (dataMap[key]) {
+          // 有数据，计算平均值
+          const dayRecords = dataMap[key];
+          const avgSys = Math.round(dayRecords.reduce((sum, r) => sum + r.systolic, 0) / dayRecords.length);
+          const avgDia = Math.round(dayRecords.reduce((sum, r) => sum + r.diastolic, 0) / dayRecords.length);
+          const avgHr = Math.round(dayRecords.reduce((sum, r) => sum + r.heartRate, 0) / dayRecords.length);
+          
+          continuousData.push({
+            date: key,
+            displayKey: displayKey,
+            systolic: avgSys,
+            diastolic: avgDia,
+            heartRate: avgHr,
+            hasData: true
+          });
+          dataPointsWithData++;
+          
+          // 收集前几个有数据的样本
+          if (debugSampleData.length < 3) {
+            debugSampleData.push({
+              date: key,
+              display: displayKey,
+              sys: avgSys,
+              count: dayRecords.length
+            });
+          }
+        } else {
+          // 无数据，添加空数据点
+          continuousData.push({
+            date: key,
+            displayKey: displayKey,
+            systolic: null,
+            diastolic: null,
+            heartRate: null,
+            hasData: false
+          });
+        }
+        
+        // 移动到下一天
+        current.setDate(current.getDate() + 1);
+      }
+    } else { // year view
+      // 年视图逻辑：按月生成数据，从当前月往前24个月
+      const current = new Date(today);
+      current.setDate(1); // 设置为每月第一天
+      
+      // 生成24个月的数据，从当前月往前
+      for (let i = 0; i < 24; i++) {
+        const key = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+        const displayKey = `${current.getMonth() + 1}月`;
+        
+        // 计算该月的数据
+        const monthRecords = [];
+        Object.keys(dataMap).forEach(dateKey => {
+          if (dateKey.startsWith(key)) {
+            monthRecords.push(...dataMap[dateKey]);
+          }
+        });
+        
+        if (monthRecords.length > 0) {
+          const avgSys = Math.round(monthRecords.reduce((sum, r) => sum + r.systolic, 0) / monthRecords.length);
+          const avgDia = Math.round(monthRecords.reduce((sum, r) => sum + r.diastolic, 0) / monthRecords.length);
+          const avgHr = Math.round(monthRecords.reduce((sum, r) => sum + r.heartRate, 0) / monthRecords.length);
+          
+          continuousData.push({
+            date: key,
+            displayKey: displayKey,
+            systolic: avgSys,
+            diastolic: avgDia,
+            heartRate: avgHr,
+            hasData: true
+          });
+          dataPointsWithData++;
+          
+          // 收集前几个有数据的样本
+          if (debugSampleData.length < 3) {
+            debugSampleData.push({
+              date: key,
+              display: displayKey,
+              sys: avgSys,
+              count: monthRecords.length
+            });
+          }
+        } else {
+          continuousData.push({
+            date: key,
+            displayKey: displayKey,
+            systolic: null,
+            diastolic: null,
+            heartRate: null,
+            hasData: false
+          });
+        }
+        
+        // 移动到上个月
+        current.setMonth(current.getMonth() - 1);
+      }
+      
+      // 年视图数据需要反转，因为我们是从当前月往前生成的
+      continuousData.reverse();
+    }
+    
+    console.log('连续数据生成完成:', {
+      总数据点: continuousData.length,
+      有效数据点: dataPointsWithData,
+      数据覆盖率: (dataPointsWithData / continuousData.length * 100).toFixed(1) + '%',
+      样本数据: debugSampleData
+    });
+    
+    // 转换为图表格式
+    const result = {
+      xData: [],
+      systolicData: [],
+      diastolicData: [],
+      heartRateData: [],
+      customBpSeriesData: []
+    };
+    
+    continuousData.forEach(point => {
+      result.xData.push(point.displayKey);
+      result.systolicData.push(point.systolic);
+      result.diastolicData.push(point.diastolic);
+      result.heartRateData.push(point.heartRate);
+      
+      if (point.hasData && point.systolic !== null) {
+        result.customBpSeriesData.push({
+          value: [point.displayKey, point.diastolic, point.systolic],
+          itemStyle: { color: calculateColor(point.systolic, point.diastolic) }
+        });
+      } else {
+        // 无数据时添加透明占位
+        result.customBpSeriesData.push({
+          value: [point.displayKey, null, null],
+          itemStyle: { color: 'transparent' }
+        });
+      }
+    });
+    
+    console.log('最终图表数据格式:', {
+      xData长度: result.xData.length,
+      前5个X轴标签: result.xData.slice(0, 5).join(', '),
+      后5个X轴标签: result.xData.slice(-5).join(', '),
+      有效血压数据点: result.customBpSeriesData.filter(d => d.value[1] !== null).length
+    });
+    
+    return result;
   },
 
   // 处理图表数据
@@ -1383,6 +2321,11 @@ Page({
     // 使用合适的缩放比例
     const scaleFactor = isWindows ? 0.5 : 0.33;
 
+    // 检查是否有有效数据（周视图/月视图特殊处理）
+    const hasValidData = data.customBpSeriesData && data.customBpSeriesData.some(item =>
+      item.value && item.value[1] !== null && item.value[2] !== null
+    );
+    
     // 如果没有数据，显示空状态
     if (!data.xData || data.xData.length === 0) {
       return {
@@ -1404,6 +2347,9 @@ Page({
         }
       };
     }
+    
+    // 所有视图：当没有有效数据时，隐藏图例和X轴
+    const shouldHideLegendAndXAxis = !hasValidData;
 
     return {
       title: {
@@ -1429,7 +2375,9 @@ Page({
       tooltip: {
         show: false // 禁用默认tooltip，使用自定义tooltip
       },
-      legend: {
+      legend: shouldHideLegendAndXAxis ? {
+        show: false
+      } : {
         data: ['血压范围', '心率'], // Updated legend
         left: 'center',
         top: isWindows ? '6%' : '6%',  // 减少顶部间距
@@ -1457,7 +2405,9 @@ Page({
         top: '13%',   // 减少顶部边距
         containLabel: true
       },
-      xAxis: {
+      xAxis: shouldHideLegendAndXAxis ? {
+        show: false
+      } : {
         type: 'category',
         data: data.xData,
         axisLabel: {
@@ -1470,7 +2420,10 @@ Page({
           showMaxLabel: true
         }
       },
-      yAxis: [
+      yAxis: shouldHideLegendAndXAxis ? [
+        { show: false },
+        { show: false }
+      ] : [
         {
           type: 'value',
           name: '',

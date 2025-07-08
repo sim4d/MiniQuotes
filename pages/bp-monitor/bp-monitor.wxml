@@ -26,13 +26,17 @@
   </view>
 
   <!-- 图表区域 -->
-  <view class="chart-container" hidden="{{showAddDialog}}">
+  <view class="chart-container" hidden="{{showAddDialog || forceRefresh}}">
     <view class="chart-wrapper">
       <ec-canvas id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}" force-use-old-canvas="{{forceOldCanvas}}"
                  bindtouchstart="onChartTouchStart"
                  bindtouchend="onChartTouchEnd"
                  bindtouchmove="onChartTouchMove"
                  bindtouchcancel="onChartTouchCancel"></ec-canvas>
+    </view>
+    <!-- 滑动提示 -->
+    <view class="swipe-hint" wx:if="{{isSwipeEnabled && currentView !== 'day'}}">
+      <text class="swipe-hint-text">左右滑动查看更多数据</text>
     </view>
   </view>
 

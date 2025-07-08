@@ -3,6 +3,7 @@
   min-height: 100vh;
   background: #f5f7fa;
   padding: 20rpx;
+  overflow-y: hidden; /* 禁止上下滑动 */
 }
 
 /* 头部导航 */
@@ -13,6 +14,8 @@
   margin-bottom: 20rpx;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
   border: 1rpx solid #e6e9ed;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .date-nav {
@@ -89,7 +92,7 @@
   position: relative;
   border-radius: 20rpx;
   overflow: visible;  /* 允许提示框溢出显示 */
-  padding: 3rpx;  /* 减少内边距以提供更多显示空间 */
+  padding: 30rpx;  /* 统一内边距与header保持一致 */
   box-sizing: border-box;
   z-index: 1;  /* 确保不会创建新的层叠上下文 */
 }
@@ -190,40 +193,66 @@ ec-canvas {
 
 .action-btn {
   flex: 1;
-  background: #ffffff;
-  border-radius: 20rpx;
-  padding: 30rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24rpx;
+  padding: 32rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.08),
+              inset 0 2rpx 0 rgba(255, 255, 255, 0.9),
+              0 0 0 2rpx rgba(0, 0, 0, 0.05);
+  border: 2rpx solid rgba(255, 255, 255, 0.7);
+  transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .action-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.97);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.05);
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.action-btn:active::before {
+  opacity: 1;
 }
 
 .add-btn {
-  background: linear-gradient(135deg, #95cdb6, #7bb99f);
+  /* 继承glassmorphism样式 */
 }
 
 .reset-btn {
-  background: linear-gradient(135deg, #dba39a, #c68481);
+  /* 继承glassmorphism样式 */
 }
 
 .btn-icon {
   font-size: 48rpx;
   margin-bottom: 10rpx;
-  color: white;
+  color: #3b82f6;
 }
 
 .btn-text {
   font-size: 28rpx;
   font-weight: 500;
-  color: white;
+  color: #3b82f6;
   text-align: center;
+  letter-spacing: 1rpx;
 }
 
 /* 模态框 */
@@ -360,6 +389,28 @@ ec-canvas {
 
 .confirm-btn:active {
   transform: scale(0.95);
+}
+
+/* 滑动提示 */
+.swipe-hint {
+  position: absolute;
+  bottom: 20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 12rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.swipe-hint-text {
+  color: white;
+  font-size: 24rpx;
+  font-weight: 400;
 }
 
 /* 响应式设计 */
