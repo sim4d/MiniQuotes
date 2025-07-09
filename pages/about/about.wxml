@@ -16,10 +16,11 @@
   <view class="modal-container" wx:if="{{showModal}}">
     <view class="modal-content">
       <view class="modal-title">(C) Sim4ai.com 2025</view>
-      <view class="reference-item" bindtap="copyUrl" data-url="https://gemini.sim4ai.com">1. gemini.sim4ai.com</view>
-      <view class="reference-item" bindtap="copyUrl" data-url="https://research.sim4ai.com">2. research.sim4ai.com</view>
-      <view class="reference-item" bindtap="copyUrl" data-url="https://tv.sim4ai.com">3. tv.sim4ai.com</view>
-      <view class="reference-item" bindtap="copyUrl" data-url="https://labubu.sim4ai.com">4. labubu.sim4ai.com</view>
+      <view class="reference-item" bindtap="copyUrl" data-url="https://gemini.sim4ai.com">gemini.sim4ai.com</view>
+      <view class="reference-item" bindtap="copyUrl" data-url="https://research.sim4ai.com">research.sim4ai.com</view>
+      <view class="reference-item" bindtap="copyUrl" data-url="https://news.sim4ai.com">news.sim4ai.com</view>
+      <view class="reference-item" bindtap="copyUrl" data-url="https://tv.sim4ai.com">tv.sim4ai.com</view>
+      <view class="reference-item" bindtap="copyUrl" data-url="https://labubu.sim4ai.com">labubu.sim4ai.com</view>
       <button class="close-btn" bindtap="hideReferences">关闭</button>
     </view>
   </view>
