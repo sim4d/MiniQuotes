@@ -34,6 +34,9 @@ App({
     ]
   },
   onLaunch() {
+    // 检查版本更新
+    this.checkForUpdate()
+    
     // 展示本地存储能力
     const logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
@@ -48,6 +51,47 @@ App({
 
     wx.setInnerAudioOption({
       obeyMuteSwitch: false
+    })
+  },
+
+  // 检查小程序版本更新
+  checkForUpdate() {
+    // 获取更新管理器
+    const updateManager = wx.getUpdateManager()
+
+    // 检查更新
+    updateManager.onCheckForUpdate(function (res) {
+      console.log('检查更新结果:', res.hasUpdate)
+      if (res.hasUpdate) {
+        console.log('发现新版本，开始下载...')
+      }
+    })
+
+    // 新版本下载完成
+    updateManager.onUpdateReady(function () {
+      console.log('新版本已下载完成')
+      wx.showModal({
+        title: '新版本已就绪',
+        content: '发现新版本，请重新启动小程序以获得更好的体验',
+        showCancel: false,
+        confirmText: '重新启动',
+        success: function (res) {
+          if (res.confirm) {
+            // 应用新版本并重启
+            updateManager.applyUpdate()
+          }
+        }
+      })
+    })
+
+    // 新版本下载失败
+    updateManager.onUpdateFailed(function () {
+      console.log('新版本下载失败')
+      wx.showToast({
+        title: '新版本下载失败',
+        icon: 'none',
+        duration: 2000
+      })
     })
   }
 })
