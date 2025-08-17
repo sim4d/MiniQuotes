@@ -60,5 +60,12 @@ Page({
         wx.navigateTo({
             url: '../solaris/solaris'
         })
+    },
+
+    // 导航到ID Copy页面
+    navigateToIDCopy: function () {
+        wx.navigateTo({
+            url: '../idcopy/idcopy'
+        })
     }
 })

@@ -1,0 +1,10 @@
+<view class="container">
+  <canvas type="2d" id="a4canvas" style="width: 794px; height: 1123px; position: absolute; left: -9999px;"></canvas>
+  <view class="image-wrapper">
+    <image wx:if="{{a4Image}}" src="{{a4Image}}" mode="widthFix"></image>
+  </view>
+  <view class="footer">
+    <button bindtap="saveImage">保存图片</button>
+    <button bindtap="exportPdf">导出PDF</button>
+  </view>
+</view>

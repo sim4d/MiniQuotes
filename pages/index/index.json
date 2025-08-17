@@ -8,6 +8,7 @@
         "bp-button": "/components/bp-button/bp-button",
         "superjog-button": "/components/superjog-button/superjog-button",
         "kjung-button": "/components/kjung-button/kjung-button",
-        "solaris-button": "/components/solaris-button/solaris-button"
+        "solaris-button": "/components/solaris-button/solaris-button",
+        "idcopy-button": "/components/idcopy-button/idcopy-button"
     }
 }

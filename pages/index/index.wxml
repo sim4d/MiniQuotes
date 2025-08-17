@@ -22,4 +22,7 @@
   <view class="solaris-button-wrapper">
     <solaris-button bindtap="navigateToSolaris"></solaris-button>
   </view>
+  <view class="idcopy-button-wrapper">
+    <idcopy-button bindtap="navigateToIDCopy"></idcopy-button>
+  </view>
 </view>

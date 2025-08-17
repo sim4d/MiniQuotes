@@ -8,7 +8,10 @@
     "pages/superjog/superjog",
     "pages/superjog-workout/superjog-workout",
     "pages/superjog-summary/superjog-summary",
-    "pages/kjung/kjung"
+    "pages/kjung/kjung",
+    "pages/idcopy/idcopy",
+    "pages/idcopy-crop/idcopy-crop",
+    "pages/idcopy-preview/idcopy-preview"
   ],
   "window": {
     "backgroundTextStyle": "light",

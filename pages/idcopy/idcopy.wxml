@@ -1,0 +1,32 @@
+<view class="page">
+  <view class="hero">
+    <text class="title">身份证复印</text>
+    <text class="subtitle">拍摄/选择身份证正反面，生成A4纸大小的身份证复印件</text>
+  </view>
+
+  <view class="section">
+    <view class="label">Front / 头像面</view>
+    <view class="id-card" bindtap="chooseImage" data-type="front">
+      <image wx:if="{{idCardFront}}" class="id-thumb" src="{{idCardFront}}" mode="widthFix"></image>
+      <view wx:else class="placeholder">
+        <text class="ph-title">上传正面</text>
+        <text class="ph-desc">点击拍照或从相册选择</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="label">Back / 国徽面</view>
+    <view class="id-card" bindtap="chooseImage" data-type="back">
+      <image wx:if="{{idCardBack}}" class="id-thumb" src="{{idCardBack}}" mode="widthFix"></image>
+      <view wx:else class="placeholder">
+        <text class="ph-title">上传背面</text>
+        <text class="ph-desc">点击拍照或从相册选择</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="actions">
+    <button class="btn primary" bindtap="createCopy" disabled="{{!idCardFront || !idCardBack}}">创建复印件</button>
+  </view>
+</view>

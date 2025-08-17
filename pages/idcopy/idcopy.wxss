@@ -1,0 +1,93 @@
+.page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.hero {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.title {
+  display: block;
+  font-size: 22px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.subtitle {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.section {
+  margin: 16px 0;
+}
+
+.label {
+  font-size: 14px;
+  color: #475569;
+  margin: 8px 4px;
+}
+
+.id-card {
+  width: 300px;
+  margin: 0 auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.placeholder {
+  width: 100%;
+  height: 190px;
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+}
+
+.ph-title {
+  font-size: 16px;
+  color: #334155;
+}
+
+.ph-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.id-thumb {
+  width: 100%;
+  display: block;
+}
+
+.actions {
+  margin-top: 20px;
+}
+
+.btn {
+  border-radius: 12px;
+  color: #ffffff;
+  border: none;
+}
+
+.btn::after {
+  border: none;
+}
+
+.btn.primary {
+  background: #3b82f6;
+}
+
+.btn[disabled] {
+  background-color: #cbd5e1;
+  color: #94a3b8;
+}

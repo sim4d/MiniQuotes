@@ -1,0 +1,15 @@
+<view class="container">
+  <canvas 
+    class="cropper" 
+    disable-scroll="true" 
+    bindtouchstart="touchStart" 
+    bindtouchmove="touchMove" 
+    bindtouchend="touchEnd" 
+    canvas-id="cropper" 
+    id="cropper">
+  </canvas>
+  <view class="footer">
+    <button bindtap="rotate">旋转</button>
+    <button bindtap="getCropperImage">确定</button>
+  </view>
+</view>

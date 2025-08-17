@@ -93,5 +93,11 @@ App({
         duration: 2000
       })
     })
+  },
+
+  onPageNotFound(res) {
+    wx.reLaunch({
+      url: '/pages/index/index'
+    });
   }
 })

@@ -1,0 +1,22 @@
+.container {
+  padding-bottom: 70px; /* for footer */
+}
+
+.image-wrapper {
+  width: 100%;
+  min-height: 600px;
+}
+
+image {
+  width: 100%;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  background-color: #f8f8f8;
+}
