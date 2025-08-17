@@ -5,6 +5,6 @@
   </view>
   <view class="footer">
     <button bindtap="saveImage">保存图片</button>
-    <button bindtap="exportPdf">导出PDF</button>
+    <button bindtap="exportPdf">预览PDF</button>
   </view>
 </view>

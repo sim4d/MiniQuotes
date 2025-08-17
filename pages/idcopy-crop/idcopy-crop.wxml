@@ -8,6 +8,15 @@
     canvas-id="cropper" 
     id="cropper">
   </canvas>
+  <cover-view class="loading-overlay" wx:if="{{isProcessingRotation}}">
+    <cover-view class="loading-text">旋转中...</cover-view>
+  </cover-view>
+  <!-- Hidden canvas for rotation -->
+  <canvas 
+    canvas-id="tempCanvas" 
+    id="tempCanvas" 
+    style="position: absolute; top: -9999px; left: -9999px; {{tempCanvasStyle}}">
+  </canvas>
   <view class="footer">
     <button bindtap="rotate">旋转</button>
     <button bindtap="getCropperImage">确定</button>

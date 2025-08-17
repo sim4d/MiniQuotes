@@ -24,3 +24,21 @@
   align-items: center;
   background-color: #f8f8f8;
 }
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 60px); /* Match cropper height */
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.loading-text {
+  color: #fff;
+  font-size: 16px;
+}
